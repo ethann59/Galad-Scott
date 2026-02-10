@@ -1,12 +1,4 @@
-from dataclasses import dataclass as component
-
-@component
+# Stub pour compatibilité - Component supprimé
 class VisionComponent:
-    def __init__(self, range=5.0):
-        """
-        component pour définir la portée de vision d'une unit.
-        
-        Args:
-            range (float): Portée de vision en units de grille (By default 5.0)
-        """
-        self.range: float = range
+    def __init__(self, *args, **kwargs):
+        pass

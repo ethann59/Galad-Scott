@@ -401,7 +401,7 @@ class MainMenu:
         elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
             if self.buttons and self.selected_button_index < len(self.buttons):
                 selected_button = self.buttons[self.selected_button_index]
-                selected_button.on_click()  # Appeler directement le callback
+                selected_button.callback()  # Appeler directement le callback
 
     def _handle_resize(self, event):
         """Handles window resizing."""
@@ -482,21 +482,22 @@ class MainMenu:
         # Version text
         version_text = f"v{version}"
         if dev_mode:
-            version_text += " [DEV MODE]"
+            version_text += " [DEV]"
 
-        # Use menu font for version display
-        if self.menu_font:
-            # Shadow for version text
-            shadow_color = (40, 40, 40) if not dev_mode else (100, 0, 0)  # Dark red shadow for dev mode
-            shadow = self.menu_font.render(version_text, True, shadow_color)
-            shadow_rect = shadow.get_rect(bottomright=(width - 20, height - 20))
-            self.surface.blit(shadow, shadow_rect)
+        # Use smaller font for version display
+        version_font = pygame.font.SysFont("Arial", 12, bold=False)
+        
+        # Shadow for version text
+        shadow_color = (40, 40, 40) if not dev_mode else (100, 0, 0)  # Dark red shadow for dev mode
+        shadow = version_font.render(version_text, True, shadow_color)
+        shadow_rect = shadow.get_rect(bottomright=(width - 8, height - 8))
+        self.surface.blit(shadow, shadow_rect)
 
-            # Main version text
-            text_color = (230, 230, 180) if not dev_mode else (255, 100, 100)  # Light red for dev mode
-            version_surf = self.menu_font.render(version_text, True, text_color)
-            version_rect = version_surf.get_rect(bottomright=(width - 18, height - 18))
-            self.surface.blit(version_surf, version_rect)
+        # Main version text
+        text_color = (200, 200, 150) if not dev_mode else (255, 100, 100)  # Light red for dev mode
+        version_surf = version_font.render(version_text, True, text_color)
+        version_rect = version_surf.get_rect(bottomright=(width - 6, height - 6))
+        self.surface.blit(version_surf, version_rect)
 
     # ========== Main loop ==========
 

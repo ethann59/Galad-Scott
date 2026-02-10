@@ -21,18 +21,18 @@ from src.version import __version__
 CONFIG_FILE = "galad_config.json"
 
 DEFAULT_CONFIG = {
-    "screen_width": 1280,
-    "screen_height": 720,
-    "window_mode": "fullscreen",  # "windowed", "fullscreen" -- Par défaut en plein écran pour la borne
+    "screen_width": 1920,
+    "screen_height": 1080,
+    "window_mode": "windowed",  # "windowed", "fullscreen" -- Par défaut en fenêtré pour le développement
     "volume_master": 0.8,
     "volume_music": 0.5,
     "volume_effects": 0.7,
-    "vsync": False,
-    "performance_mode": "auto",  # "auto", "high", "medium", "low"
+    "vsync": True,
+    "performance_mode": "high",  # "auto", "high", "medium", "low"
     "disable_particles": False,
     "disable_shadows": False,
     "disable_ai_learning": True,
-    "max_fps": 60,
+    "max_fps": 75,  # Augmenté pour une meilleure expérience
     "show_fps": False,
     "dev_mode": False,  # Mode développement pour les actions debug
     "language": "fr",

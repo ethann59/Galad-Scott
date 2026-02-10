@@ -1,9 +1,4 @@
-from dataclasses import dataclass as component
-
-@component
+# Stub pour compatibilité - Component supprimé
 class PlayerSelectedComponent:
-    def __init__(self, player_id: int):
-        """
-        player_id : identifiant du joueur qui contrôle cette entity (0 = joueur 1, 1 = joueur 2, etc.)
-        """
-        self.player_id = player_id
+    def __init__(self, *args, **kwargs):
+        pass

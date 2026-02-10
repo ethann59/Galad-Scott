@@ -1,5 +1,2 @@
-"""Module de compatibilité réexportant les constantes d'units."""
-
-from src.factory.unitType import UnitType
-
-__all__ = ["UnitType"]
+# Stub pour compatibilité - Types d'unités supprimés
+UNIT_TYPES = {}

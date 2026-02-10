@@ -1,6 +1,4 @@
-from dataclasses import dataclass as component
-
-@component
+# Stub pour compatibilité - Component supprimé
 class RessourcesComponent:
-    def __init__(self, gold=0):
-        self.gold: int = gold
+    def __init__(self, *args, **kwargs):
+        pass
