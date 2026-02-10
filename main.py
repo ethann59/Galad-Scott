@@ -9,7 +9,7 @@ from src.ui.crash_window import show_crash_popup
 from src.managers.display import DisplayManager, LayoutManager, get_display_manager
 from src.managers.audio import AudioManager, VolumeWatcher
 from src.menu.state import MenuState
-from src.ui.ui_component import Button, ParticleSystem
+from src.ui.ui_component import Button
 from src.ui.generic_modal import GenericModal
 from src.constants.assets import MUSIC_MAIN_THEME, MUSIC_IN_GAME
 import src.settings.settings as settings
@@ -110,8 +110,8 @@ class MainMenu:
         width, height = self.display_manager.get_size()
         pygame.display.set_caption(t("system.main_window_title"))
 
-        # Particles
-        self.particles = ParticleSystem(width, height)
+        # Particles disabled for rail shooter mode
+        self.particles = None
 
         # Buttons
         self._create_buttons()
@@ -226,10 +226,17 @@ class MainMenu:
 
     def _on_scores(self):
         """Shows the score screen."""
+        try:
+            from src.utils.score_manager import get_score_lines
+            score_lines = get_score_lines(limit=10)
+        except Exception:
+            score_lines = []
+
         modal = GenericModal(
             title_key="scores.title",
-            message_key="scores.empty",
+            message_key="scores.empty" if not score_lines else "scores.title",
             buttons=[("close", "menu.close")],
+            extra_lines=score_lines,
         )
         modal.open(self.surface)
         clock = pygame.time.Clock()
@@ -350,7 +357,8 @@ class MainMenu:
         if self.display_manager.handle_resize(event.w, event.h):
             self.state.schedule_resize(event.w, event.h)
             self.state.mark_layout_dirty()
-            self.particles.resize(event.w, event.h)
+            if self.particles is not None:
+                self.particles.resize(event.w, event.h)
 
     def _handle_mouse_down(self, mouse_pos):
         """Handles mouse click."""
@@ -373,9 +381,7 @@ class MainMenu:
         # Background
         self.surface.blit(self.bg_scaled, (0, 0))
 
-        # Particles
-        self.particles.update(dt)
-        self.particles.draw(self.surface)
+        # Particles disabled
 
         # Buttons
         for button in self.buttons:

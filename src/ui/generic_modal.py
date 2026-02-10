@@ -145,7 +145,7 @@ class GenericModal:
 
         # Lignes supplémentaires (stats, détails, etc.)
         if self.extra_lines:
-            for line in self.extra_lines[:8]:  # limiter l'affichage pour éviter le débordement
+            for line in self.extra_lines[:10]:  # afficher jusqu'à 10 scores
                 txt = self.font_message.render(str(line), True, (200, 200, 210))
                 panel.blit(txt, (40, y_cursor))
                 y_cursor += 28

@@ -22,6 +22,8 @@ TRANSLATIONS = {
     "menu.yes": "Yes",
     "scores.title": "Scores",
     "scores.empty": "No scores yet",
+    "options.simple_title": "Options",
+    "options.simple_message": "Fullscreen by default",
     "team_selection.message": "Select your starting side:",
     "team_selection.team1": "The Dawn Fleet",
     "team_selection.team2": "The Abyss Legion",

@@ -48,7 +48,11 @@ class RailShooterEngine:
         self.game_over_timer = 0.0
         self._last_dt = 0.0
         self._background_speed = 80.0
-        self._projectile_speed_multiplier = 4.0
+        self._projectile_speed_multiplier = 2.5
+        self._score_saved = False
+        self._entering_name = False
+        self._name_input = ""
+        self._name_confirmed = False
 
         self.collision_processor: Optional[CollisionProcessor] = None
         self.lifetime_processor: Optional[LifetimeProcessor] = None
@@ -151,18 +155,26 @@ class RailShooterEngine:
             if event.type == pygame.QUIT:
                 self.running = False
                 return
+            if self._entering_name and event.type == pygame.KEYDOWN:
+                self._handle_name_input(event)
+                continue
             if event.type == pygame.KEYDOWN and controls.matches_action(controls.ACTION_SYSTEM_PAUSE, event):
                 self.running = False
                 return
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self._try_player_fire()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self._try_player_fire()
 
     def _update(self, dt: float) -> None:
         if self.window is None:
             return
 
         if self.game_over:
-            self.game_over_timer -= dt
-            if self.game_over_timer <= 0:
-                self.running = False
+            if self._name_confirmed:
+                self.game_over_timer -= dt
+                if self.game_over_timer <= 0:
+                    self.running = False
             return
 
         self._update_player(dt)
@@ -208,9 +220,7 @@ class RailShooterEngine:
             self.player_fire_cooldown -= dt
 
         if controls.is_action_active(controls.ACTION_UNIT_ATTACK, keys, modifiers_state):
-            if self.player_fire_cooldown <= 0:
-                es.dispatch_event("attack_event", self.player_id, "bullet")
-                self.player_fire_cooldown = 0.25
+            self._try_player_fire()
 
     def _spawn_enemies(self, dt: float) -> None:
         if self.window is None:
@@ -283,12 +293,15 @@ class RailShooterEngine:
             kind = int(state.get("kind", 0.0))
             speed = state.get("speed", 120.0)
 
+            start_x = pos.x
             if kind == 0:
                 self._update_scout_enemy(enemy_id, pos, state, dt, player_pos)
             elif kind == 1:
                 self._update_maraudeur_enemy(enemy_id, pos, state, dt, player_pos)
             else:
                 self._update_kamikaze_enemy(enemy_id, pos, state, dt, player_pos)
+            if pos.x > start_x:
+                pos.x = start_x
 
     def _update_scout_enemy(self, enemy_id: int, pos: PositionComponent, state: Dict[str, float], dt: float, player_pos: Optional[PositionComponent]) -> None:
         speed = state.get("speed", 140.0)
@@ -348,6 +361,14 @@ class RailShooterEngine:
             pos.x += -math.cos(direction_rad) * speed * dt
             pos.y += -math.sin(direction_rad) * speed * dt
 
+    def _try_player_fire(self) -> None:
+        if self.player_id is None or not es.entity_exists(self.player_id):
+            return
+        if self.player_fire_cooldown > 0:
+            return
+        es.dispatch_event("attack_event", self.player_id, "bullet")
+        self.player_fire_cooldown = 0.08
+
     def _fire_at_target(self, enemy_id: int, pos: PositionComponent, target: Optional[PositionComponent], spread: float = 0.0) -> None:
         if target is None:
             return
@@ -381,6 +402,12 @@ class RailShooterEngine:
         margin = 120
 
         for ent, pos in es.get_component(PositionComponent):
+            if es.has_component(ent, ProjectileComponent):
+                # Laisser une marge avant de supprimer les projectiles
+                if pos.x < -50 or pos.x > width + 50 or pos.y < -50 or pos.y > height + 50:
+                    if es.entity_exists(ent):
+                        es.delete_entity(ent)
+                    continue
             if pos.x < -margin or pos.x > width + margin or pos.y < -margin or pos.y > height + margin:
                 if ent in self.enemy_entities:
                     self.despawned_enemies.add(ent)
@@ -406,13 +433,13 @@ class RailShooterEngine:
 
         if not es.entity_exists(self.player_id):
             self.game_over = True
-            self.game_over_timer = 2.0
+            self._start_name_entry()
             return
 
         health = es.component_for_entity(self.player_id, HealthComponent)
         if health.currentHealth <= 0:
             self.game_over = True
-            self.game_over_timer = 2.0
+            self._start_name_entry()
 
     def _render(self) -> None:
         if self.window is None:
@@ -476,9 +503,62 @@ class RailShooterEngine:
             rect = over_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
             self.window.blit(over_surface, rect)
 
+            if self._entering_name and not self._name_confirmed:
+                self._render_name_prompt()
+
     def _cleanup(self) -> None:
         if self.created_local_window:
             pygame.display.set_mode(config_manager.get_resolution(), pygame.RESIZABLE)
+
+    def _save_score_once(self) -> None:
+        if self._score_saved:
+            return
+        try:
+            from src.utils.score_manager import add_score
+            name = self._name_input.strip() or "Player"
+            add_score(self.score, name)
+        except Exception:
+            pass
+        self._score_saved = True
+
+    def _start_name_entry(self) -> None:
+        if not self._entering_name:
+            self._entering_name = True
+            self._name_input = ""
+            self._name_confirmed = False
+
+    def _handle_name_input(self, event: pygame.event.Event) -> None:
+        if event.key == pygame.K_RETURN:
+            self._name_confirmed = True
+            self._entering_name = False
+            self.game_over_timer = 1.5
+            self._save_score_once()
+            return
+        if event.key == pygame.K_BACKSPACE:
+            self._name_input = self._name_input[:-1]
+            return
+        if len(self._name_input) >= 12:
+            return
+        if event.unicode and event.unicode.isprintable():
+            if event.unicode in "\r\n\t":
+                return
+            self._name_input += event.unicode
+
+    def _render_name_prompt(self) -> None:
+        if self.window is None:
+            return
+        prompt_font = pygame.font.SysFont("Arial", 24, bold=True)
+        name_font = pygame.font.SysFont("Arial", 26, bold=True)
+        prompt = "Enter name and press Enter"
+        name_text = self._name_input or "Player"
+        prompt_surface = prompt_font.render(prompt, True, (240, 240, 240))
+        name_surface = name_font.render(name_text, True, (255, 215, 0))
+        center_x = self.window.get_width() // 2
+        base_y = (self.window.get_height() // 2) + 60
+        prompt_rect = prompt_surface.get_rect(center=(center_x, base_y))
+        name_rect = name_surface.get_rect(center=(center_x, base_y + 36))
+        self.window.blit(prompt_surface, prompt_rect)
+        self.window.blit(name_surface, name_rect)
 
 
 def run_rail_shooter(window: Optional[pygame.Surface] = None, audio_manager=None) -> None:

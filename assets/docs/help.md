@@ -1,32 +1,38 @@
-# Guide du Joueur - Galad Islands
+# Guide du Joueur - Galad Islands Rail Shooter
 
 ## Contrôles du Jeu
 
-### Joueur 1
+### Déplacement du Joueur
 
-- **Z** : Avancer
-- **S** : Reculer
-- **Q** : Tourner à gauche
-- **D** : Tourner à droite
-- **&** : Sélectionner la troupe précédente
-- **"** : Sélectionner la prochaine troupe
-- **A** : Activer le mode attaque
-- **E** : Activer la capacité spéciale
+- **Z** ou **Flèche Haut** : Monter
+- **S** ou **Flèche Bas** : Descendre  
+- **Q** ou **Flèche Gauche** : Aller à gauche
+- **D** ou **Flèche Droite** : Aller à droite
 
-### Caméra / Carte
+### Combat
 
-- **Flèches directionnelles** : Déplacer la caméra sur la carte (haut/bas/gauche/droite)
-- **Molette de la souris** : Zoom avant/arrière sur la carte
-- **Échap** : Quitter la vue carte et revenir au menu
+- **Espace** : Tirer (tir automatique maintenu)
+- **A** : Tirer (alternatif)
 
-## Guide des Troupes
+### Menu
 
-### Unités de Combat
+- **Échap** : Pause / Menu in-game
+- **Entrée** : Valider les choix
 
-#### **Scout Léger** - 10 Gold
+## Objectif
 
-![Scout Léger allié](/assets/docs/units/ally/Scout.png)
-![Scout Léger ennemi](/assets/docs/units/enemy/Scout.png)
+Détruisez tous les ennemis qui apparaissent à l'écran pour marquer des points !
+
+### Types d'Ennemis
+
+#### **Scout** 
+Ennemi rapide qui zigzague sur l'écran. Facile à toucher mais imprévisible.
+
+#### **Maraudeur**
+Ennemi qui tire en rafales. Plus dangereux mais plus lent.
+
+#### **Kamikaze**
+Ennemi qui fonce directement sur vous ! Éliminez-le rapidement.
 
 - **Vitesse** : 5/s
 - **Dégâts** : 10-15

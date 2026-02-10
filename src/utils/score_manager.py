@@ -1,0 +1,86 @@
+import json
+import os
+from datetime import datetime
+from typing import List
+
+_DEFAULT_SCORES = [
+    ("Astra", 520),
+    ("Rémi", 460),
+    ("Nami", 390),
+    ("Orion", 320),
+    ("Pico", 260),
+    ("Edouard", 210),
+    ("Enzo", 170),
+    ("Julien", 130),
+    ("Iris", 90),
+    ("Lieserl", 60),
+]
+
+
+def _scores_path() -> str:
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    return os.path.join(root, "scores.json")
+
+
+def _ensure_file() -> None:
+    path = _scores_path()
+    if os.path.exists(path):
+        return
+    data = {
+        "scores": [
+            {"name": name, "score": score, "timestamp": "default"} for name, score in _DEFAULT_SCORES
+        ]
+    }
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(data, handle, indent=2)
+
+
+def load_scores() -> List[dict]:
+    _ensure_file()
+    path = _scores_path()
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+    except Exception:
+        data = {"scores": []}
+    scores = data.get("scores", [])
+    if not isinstance(scores, list):
+        return []
+    cleaned = []
+    for entry in scores:
+        if not isinstance(entry, dict) or "score" not in entry:
+            continue
+        if "name" not in entry or not str(entry.get("name", "")).strip():
+            entry["name"] = "Player"
+        cleaned.append(entry)
+    return cleaned
+
+
+def save_scores(entries: List[dict]) -> None:
+    path = _scores_path()
+    data = {"scores": entries}
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(data, handle, indent=2)
+
+
+def add_score(score: int, name: str) -> None:
+    entries = load_scores()
+    entries.append({
+        "name": str(name).strip() or "Player",
+        "score": int(score),
+        "timestamp": datetime.now().isoformat(),
+    })
+    entries = sorted(entries, key=lambda item: int(item.get("score", 0)), reverse=True)
+    save_scores(entries[:50])
+
+
+def get_score_lines(limit: int = 10) -> List[str]:
+    entries = load_scores()
+    if not entries:
+        return []
+    lines = []
+    for index, entry in enumerate(entries[:limit], start=1):
+        name = str(entry.get("name", "Player"))
+        score = int(entry.get("score", 0))
+        lines.append(f"{index}. {name} - {score}")
+    return lines

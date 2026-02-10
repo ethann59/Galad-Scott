@@ -22,6 +22,8 @@ TRANSLATIONS = {
     "menu.yes": "Oui",
     "scores.title": "Scores",
     "scores.empty": "Aucun score pour le moment",
+    "options.simple_title": "Options",
+    "options.simple_message": "Plein ecran par defaut",
     "team_selection.message": "Sélectionnez votre camp de départ :",
     "team_selection.team1": "La Flotte de l'Aube",
     "team_selection.team2": "La Légion des Abysses",
