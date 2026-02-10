@@ -50,9 +50,14 @@ class RailShooterEngine:
         self._background_speed = 80.0
         self._projectile_speed_multiplier = 2.5
         self._score_saved = False
+        
+        # Variables pour la saisie de nom style borne d'arcade
         self._entering_name = False
         self._name_input = ""
         self._name_confirmed = False
+        self._letter_index = 0  # Index de la lettre actuelle
+        self._char_position = 0  # Position dans le nom
+        self._available_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 
         self.collision_processor: Optional[CollisionProcessor] = None
         self.lifetime_processor: Optional[LifetimeProcessor] = None
@@ -156,7 +161,7 @@ class RailShooterEngine:
                 self.running = False
                 return
             if self._entering_name and event.type == pygame.KEYDOWN:
-                self._handle_name_input(event)
+                self._handle_name_input_arcade(event)
                 continue
             if event.type == pygame.KEYDOWN and controls.matches_action(controls.ACTION_SYSTEM_PAUSE, event):
                 self.running = False
@@ -504,7 +509,7 @@ class RailShooterEngine:
             self.window.blit(over_surface, rect)
 
             if self._entering_name and not self._name_confirmed:
-                self._render_name_prompt()
+                self._render_name_prompt_arcade()
 
     def _cleanup(self) -> None:
         if self.created_local_window:
@@ -528,37 +533,261 @@ class RailShooterEngine:
             self._name_confirmed = False
 
     def _handle_name_input(self, event: pygame.event.Event) -> None:
-        if event.key == pygame.K_RETURN:
+        """Interface de saisie style borne d'arcade."""
+        if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+            # Valider le nom
             self._name_confirmed = True
             self._entering_name = False
             self.game_over_timer = 1.5
             self._save_score_once()
             return
-        if event.key == pygame.K_BACKSPACE:
-            self._name_input = self._name_input[:-1]
-            return
-        if len(self._name_input) >= 12:
-            return
-        if event.unicode and event.unicode.isprintable():
-            if event.unicode in "\r\n\t":
-                return
-            self._name_input += event.unicode
+            
+        elif event.key in (pygame.K_UP, pygame.K_w):
+            # Changer la lettre vers le haut
+            self._letter_index = (self._letter_index - 1) % len(self._available_chars)
+            
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
+            # Changer la lettre vers le bas  
+            self._letter_index = (self._letter_index + 1) % len(self._available_chars)
+            
+        elif event.key in (pygame.K_RIGHT, pygame.K_d):
+            # Confirmer la lettre et passer à la suivante
+            if self._char_position < len(self._name_input):
+                # Modifier lettre existante
+                name_list = list(self._name_input)
+                name_list[self._char_position] = self._available_chars[self._letter_index]
+                self._name_input = ''.join(name_list)
+            else:
+                # Ajouter nouvelle lettre
+                if len(self._name_input) < 8:  # Limite à 8 caractères
+                    self._name_input += self._available_chars[self._letter_index]
+            
+            # Passer au caractère suivant
+            if self._char_position < 7:  # Max 8 caractères (0-7)
+                self._char_position += 1
+                self._letter_index = 0  # Reset sur 'A'
+                
+        elif event.key in (pygame.K_LEFT, pygame.K_a):
+            # Revenir au caractère précédent
+            if self._char_position > 0:
+                self._char_position -= 1
+                # Charger la lettre actuelle à cette position
+                if self._char_position < len(self._name_input):
+                    current_char = self._name_input[self._char_position]
+                    try:
+                        self._letter_index = self._available_chars.index(current_char)
+                    except ValueError:
+                        self._letter_index = 0
+                        
+        elif event.key == pygame.K_BACKSPACE:
+            # Effacer le caractère actuel
+            if self._name_input and self._char_position > 0:
+                self._char_position -= 1
+                self._name_input = self._name_input[:self._char_position] + self._name_input[self._char_position + 1:]
+                
+        # S'assurer que _name_input ne dépasse pas la position
+        if len(self._name_input) < self._char_position:
+            self._char_position = len(self._name_input)
 
     def _render_name_prompt(self) -> None:
+        """Interface de saisie style borne d'arcade."""
         if self.window is None:
             return
-        prompt_font = pygame.font.SysFont("Arial", 24, bold=True)
-        name_font = pygame.font.SysFont("Arial", 26, bold=True)
-        prompt = "Enter name and press Enter"
-        name_text = self._name_input or "Player"
-        prompt_surface = prompt_font.render(prompt, True, (240, 240, 240))
-        name_surface = name_font.render(name_text, True, (255, 215, 0))
+            
+        title_font = pygame.font.SysFont("Arial", 28, bold=True)
+        name_font = pygame.font.SysFont("Arial", 32, bold=True)
+        char_font = pygame.font.SysFont("Arial", 40, bold=True)
+        instruction_font = pygame.font.SysFont("Arial", 20)
+        
         center_x = self.window.get_width() // 2
-        base_y = (self.window.get_height() // 2) + 60
-        prompt_rect = prompt_surface.get_rect(center=(center_x, base_y))
-        name_rect = name_surface.get_rect(center=(center_x, base_y + 36))
-        self.window.blit(prompt_surface, prompt_rect)
+        base_y = (self.window.get_height() // 2) - 50
+        
+        # Titre
+        title = "NOUVEAU RECORD!"
+        title_surface = title_font.render(title, True, (255, 215, 0))
+        title_rect = title_surface.get_rect(center=(center_x, base_y - 60))
+        self.window.blit(title_surface, title_rect)
+        
+        # Score
+        score_text = f"Score: {self.score}"
+        score_surface = title_font.render(score_text, True, (255, 255, 255))
+        score_rect = score_surface.get_rect(center=(center_x, base_y - 30))
+        self.window.blit(score_surface, score_rect)
+        
+        # Nom avec caractères éditables
+        name_y = base_y + 20
+        char_width = 40
+        start_x = center_x - (4 * char_width)  # Centrer pour 8 caractères
+        
+        # Afficher chaque position de caractère
+        for i in range(8):
+            x_pos = start_x + (i * char_width)
+            
+            # Caractère à afficher
+            if i < len(self._name_input):
+                char = self._name_input[i]
+            elif i == self._char_position:
+                char = self._available_chars[self._letter_index]
+            else:
+                char = "_"
+            
+            # Couleur selon la position
+            if i == self._char_position:
+                color = (255, 215, 0)  # Surbrillance or pour position actuelle
+                # Fond pour la sélection
+                highlight_rect = pygame.Rect(x_pos - 5, name_y - 5, 35, 45)
+                pygame.draw.rect(self.window, (255, 215, 0, 50), highlight_rect)
+                pygame.draw.rect(self.window, (255, 215, 0), highlight_rect, 2)
+            else:
+                color = (220, 220, 220)
+            
+            char_surface = char_font.render(char, True, color)
+            char_rect = char_surface.get_rect(center=(x_pos + 15, name_y + 20))
+            self.window.blit(char_surface, char_rect)
+        
+        # Instructions  
+        instructions = [
+            "↑↓: Changer lettre",
+            "←→: Déplacer curseur", 
+            "Entrée/Espace: Valider",
+            "Backspace: Effacer"
+        ]
+        
+        inst_y = name_y + 80
+        for instruction in instructions:
+            inst_surface = instruction_font.render(instruction, True, (180, 180, 180))
+            inst_rect = inst_surface.get_rect(center=(center_x, inst_y))
+            self.window.blit(inst_surface, inst_rect)
+            inst_y += 25
         self.window.blit(name_surface, name_rect)
+
+    def _handle_name_input_arcade(self, event: pygame.event.Event) -> None:
+        """Interface de saisie style borne d'arcade."""
+        if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+            # Valider le nom
+            self._name_confirmed = True
+            self._entering_name = False
+            self.game_over_timer = 1.5
+            self._save_score_once()
+            return
+            
+        elif event.key in (pygame.K_UP, pygame.K_w):
+            # Changer la lettre vers le haut
+            self._letter_index = (self._letter_index - 1) % len(self._available_chars)
+            
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
+            # Changer la lettre vers le bas  
+            self._letter_index = (self._letter_index + 1) % len(self._available_chars)
+            
+        elif event.key in (pygame.K_RIGHT, pygame.K_d):
+            # Confirmer la lettre et passer à la suivante
+            if self._char_position < len(self._name_input):
+                # Modifier lettre existante
+                name_list = list(self._name_input)
+                name_list[self._char_position] = self._available_chars[self._letter_index]
+                self._name_input = ''.join(name_list)
+            else:
+                # Ajouter nouvelle lettre
+                if len(self._name_input) < 8:  # Limite à 8 caractères
+                    self._name_input += self._available_chars[self._letter_index]
+            
+            # Passer au caractère suivant
+            if self._char_position < 7:  # Max 8 caractères (0-7)
+                self._char_position += 1
+                self._letter_index = 0  # Reset sur 'A'
+                
+        elif event.key in (pygame.K_LEFT, pygame.K_a):
+            # Revenir au caractère précédent
+            if self._char_position > 0:
+                self._char_position -= 1
+                # Charger la lettre actuelle à cette position
+                if self._char_position < len(self._name_input):
+                    current_char = self._name_input[self._char_position]
+                    try:
+                        self._letter_index = self._available_chars.index(current_char)
+                    except ValueError:
+                        self._letter_index = 0
+                        
+        elif event.key == pygame.K_BACKSPACE:
+            # Effacer le caractère actuel
+            if self._name_input and self._char_position > 0:
+                self._char_position -= 1
+                self._name_input = self._name_input[:self._char_position] + self._name_input[self._char_position + 1:]
+                
+        # S'assurer que _name_input ne dépasse pas la position
+        if len(self._name_input) < self._char_position:
+            self._char_position = len(self._name_input)
+
+    def _render_name_prompt_arcade(self) -> None:
+        """Interface de saisie style borne d'arcade."""
+        if self.window is None:
+            return
+            
+        title_font = pygame.font.SysFont("Arial", 28, bold=True)
+        name_font = pygame.font.SysFont("Arial", 32, bold=True)
+        char_font = pygame.font.SysFont("Arial", 40, bold=True)
+        instruction_font = pygame.font.SysFont("Arial", 20)
+        
+        center_x = self.window.get_width() // 2
+        base_y = (self.window.get_height() // 2) - 50
+        
+        # Titre
+        title = "NOUVEAU RECORD!"
+        title_surface = title_font.render(title, True, (255, 215, 0))
+        title_rect = title_surface.get_rect(center=(center_x, base_y - 60))
+        self.window.blit(title_surface, title_rect)
+        
+        # Score
+        score_text = f"Score: {self.score}"
+        score_surface = title_font.render(score_text, True, (255, 255, 255))
+        score_rect = score_surface.get_rect(center=(center_x, base_y - 30))
+        self.window.blit(score_surface, score_rect)
+        
+        # Nom avec caractères éditables
+        name_y = base_y + 20
+        char_width = 40
+        start_x = center_x - (4 * char_width)  # Centrer pour 8 caractères
+        
+        # Afficher chaque position de caractère
+        for i in range(8):
+            x_pos = start_x + (i * char_width)
+            
+            # Caractère à afficher
+            if i < len(self._name_input):
+                char = self._name_input[i]
+            elif i == self._char_position:
+                char = self._available_chars[self._letter_index]
+            else:
+                char = "_"
+            
+            # Couleur selon la position
+            if i == self._char_position:
+                color = (255, 215, 0)  # Surbrillance or pour position actuelle
+                # Fond pour la sélection
+                highlight_rect = pygame.Rect(x_pos - 5, name_y - 5, 35, 45)
+                pygame.draw.rect(self.window, (255, 215, 0, 50), highlight_rect)
+                pygame.draw.rect(self.window, (255, 215, 0), highlight_rect, 2)
+            else:
+                color = (220, 220, 220)
+            
+            char_surface = char_font.render(char, True, color)
+            char_rect = char_surface.get_rect(center=(x_pos + 15, name_y + 20))
+            self.window.blit(char_surface, char_rect)
+        
+        # Instructions  
+        instructions = [
+            "↑↓: Changer lettre",
+            "←→: Déplacer curseur", 
+            "Entrée/Espace: Valider",
+            "Backspace: Effacer"
+        ]
+        
+        inst_y = name_y + 80
+        for instruction in instructions:
+            inst_surface = instruction_font.render(instruction, True, (180, 180, 180))
+            inst_rect = inst_surface.get_rect(center=(center_x, inst_y))
+            self.window.blit(inst_surface, inst_rect)
+            inst_y += 25
 
 
 def run_rail_shooter(window: Optional[pygame.Surface] = None, audio_manager=None) -> None:
