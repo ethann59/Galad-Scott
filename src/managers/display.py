@@ -1,0 +1,245 @@
+"""
+Display and responsive layout manager.
+Centralizes windowing logic and element positioning.
+"""
+
+import pygame
+import sys
+from typing import Tuple, Optional
+from src.settings import settings
+
+
+class DisplayManager:
+    """Manages display, windowed/fullscreen mode, and responsive layout."""
+
+    def __init__(self):
+        self.is_fullscreen = False
+        self.is_borderless = False
+        self.width = settings.SCREEN_WIDTH
+        self.height = settings.SCREEN_HEIGHT
+        self.surface: Optional[pygame.Surface] = None
+        self.dirty = False
+
+        # Load mode from config
+        window_mode = settings.config_manager.get("window_mode", "windowed")
+        self.is_fullscreen = (window_mode == "fullscreen")
+
+    def initialize(self, surface: Optional[pygame.Surface] = None) -> pygame.Surface:
+        """
+        Initializes or reuses a display surface.
+
+        Args:
+            surface: Existing surface to reuse (optional)
+
+        Returns:
+            The active display surface
+        """
+        if surface is not None:
+            self.surface = surface
+            self.width, self.height = surface.get_size()
+        else:
+            self.surface = self._create_window()
+
+        return self.surface
+
+    def _create_window(self) -> pygame.Surface:
+        """Creates a new window according to current parameters."""
+        if self.is_fullscreen:
+            # In fullscreen we prefer the native display size if the requested
+            # resolution matches it; otherwise try to use SCALED to allow a
+            # logical (requested) resolution that is scaled to the native size.
+            info = pygame.display.Info()
+            native_w, native_h = info.current_w, info.current_h
+
+            # If the requested size equals native, create a native fullscreen
+            if (self.width, self.height) == (native_w, native_h):
+                return pygame.display.set_mode((native_w, native_h), pygame.FULLSCREEN)
+
+            # Try to create a scaled fullscreen window (logical resolution = requested)
+            flags = pygame.FULLSCREEN
+            if hasattr(pygame, 'SCALED'):
+                flags |= pygame.SCALED
+
+            try:
+                surface = pygame.display.set_mode((self.width, self.height), flags)
+                # If set_mode returns a surface whose size does not match the
+                # requested logical size (older pygame versions/drivers), fall
+                # back to native fullscreen to keep the display stable.
+                surf_w, surf_h = surface.get_size()
+                if (surf_w, surf_h) != (self.width, self.height) and (surf_w, surf_h) == (native_w, native_h):
+                    # We got native-sized surface despite requesting custom size;
+                    # keep size set to native so subsequent layout matches actual surface.
+                    self.width, self.height = native_w, native_h
+                return surface
+            except Exception:
+                # Fallback: use native fullscreen to avoid crashing on unsupported modes
+                try:
+                    self.width, self.height = native_w, native_h
+                    return pygame.display.set_mode((native_w, native_h), pygame.FULLSCREEN)
+                except Exception:
+                    # As an ultimate fallback, fall back to a resizable window
+                    self.is_fullscreen = False
+                    return pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+        else:
+            if sys.platform != "win32":
+                import os
+                os.environ['SDL_VIDEO_WINDOW_POS'] = "centered"
+            return pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
+
+    def toggle_fullscreen(self):
+        """Toggles between windowed and fullscreen mode."""
+        self.is_fullscreen = not self.is_fullscreen
+        if self.is_fullscreen:
+            self.is_borderless = False
+
+        # Save to config
+        try:
+            settings.set_window_mode("fullscreen" if self.is_fullscreen else "windowed")
+        except Exception:
+            pass
+
+        self.dirty = True
+
+    def apply_changes(self) -> pygame.Surface:
+        """Applies pending display changes."""
+        if not self.dirty:
+            return self.surface
+
+        self.surface = self._create_window()
+        self.dirty = False
+        return self.surface
+
+    def apply_resolution_and_recreate(self, width: int, height: int) -> pygame.Surface:
+        """Apply a new resolution (update config) and recreate the display surface.
+
+        This will update the persistent settings (via settings.apply_resolution), update
+        the local width/height and recreate the window immediately returning the new surface.
+        """
+        try:
+            settings.apply_resolution(width, height)
+        except Exception:
+            pass
+
+        self.width = int(width)
+        self.height = int(height)
+        self.dirty = True
+        return self.apply_changes()
+
+    def update_from_config(self) -> bool:
+        """
+        Updates from external configuration.
+        Returns True if changes were detected.
+        """
+        changed = False
+
+        # Check display mode
+        current_mode = settings.config_manager.get("window_mode", "windowed")
+        if current_mode == "fullscreen" and not self.is_fullscreen:
+            self.is_fullscreen = True
+            self.is_borderless = False
+            self.dirty = True
+            changed = True
+        elif current_mode == "windowed" and self.is_fullscreen:
+            self.is_fullscreen = False
+            self.is_borderless = False
+            self.dirty = True
+            changed = True
+
+        # Check resolution (read dynamic config manager so changes are detected immediately)
+        # Allow resolution changes regardless of fullscreen/windowed state: users
+        # should be able to change resolution while in fullscreen as well.
+        try:
+            config_resolution = settings.config_manager.get_resolution()
+        except Exception:
+            config_resolution = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+
+        if config_resolution != (self.width, self.height):
+            self.width, self.height = config_resolution
+            self.dirty = True
+            changed = True
+
+        return changed
+
+    def handle_resize(self, new_width: int, new_height: int):
+        """Handles a resize event."""
+        if not self.is_fullscreen and not self.is_borderless:
+            self.width = new_width
+            self.height = new_height
+            return True
+        return False
+
+    def get_size(self) -> Tuple[int, int]:
+        """Returns the current display size."""
+        return (self.width, self.height)
+
+
+class LayoutManager:
+    """Calculates positions and sizes of UI elements in a responsive manner."""
+
+    @staticmethod
+    def calculate_button_layout(screen_width: int, screen_height: int, 
+                                num_buttons: int) -> dict:
+        """
+        Calculates the layout for main buttons.
+
+        Returns:
+            Dict containing: btn_w, btn_h, btn_gap, btn_x, start_y, font_size
+        """
+        # Button dimensions
+        btn_w = max(int(screen_width * 0.12), min(int(screen_width * 0.28), 520))
+        btn_h = max(int(screen_height * 0.06), min(int(screen_height * 0.12), 150))
+        btn_gap = max(int(screen_height * 0.01), int(screen_height * 0.02))
+        btn_x = int(screen_width * 0.62)
+
+        # Vertical centering
+        total_height = num_buttons * btn_h + (num_buttons - 1) * btn_gap
+        available_height = screen_height * 0.8
+        start_y = int(screen_height * 0.1 + (available_height - total_height) / 2)
+
+        # Font size
+        font_size = max(12, int(btn_h * 0.45))
+
+        return {
+            'btn_w': btn_w,
+            'btn_h': btn_h,
+            'btn_gap': btn_gap,
+            'btn_x': btn_x,
+            'start_y': start_y,
+            'font_size': font_size
+        }
+
+    @staticmethod
+    def calculate_tip_layout(screen_height: int) -> dict:
+        """
+        Calculates the layout for the tip at the bottom of the screen.
+
+        Returns:
+            Dict containing: font_size, y_position
+        """
+        return {
+            'font_size': max(12, int(screen_height * 0.025)),
+            'y_position': screen_height - max(20, int(screen_height * 0.04))
+        }
+
+    @staticmethod
+    def create_adaptive_font(screen_width: int, screen_height: int, 
+                            size_ratio: float = 0.025, bold: bool = False) -> pygame.font.Font:
+        """Creates a font whose size adapts to screen dimensions."""
+        size = max(12, int(min(screen_width, screen_height) * size_ratio))
+        return pygame.font.SysFont("Arial", size, bold=bold)
+
+    @staticmethod
+    def create_title_font(screen_width: int, screen_height: int) -> pygame.font.Font:
+        """Creates an adaptive title font."""
+        return LayoutManager.create_adaptive_font(screen_width, screen_height, size_ratio=0.05, bold=True)
+
+
+# Module-level singleton accessor for the display manager
+_global_display_manager: Optional[DisplayManager] = None
+
+def get_display_manager() -> DisplayManager:
+    """Return a shared DisplayManager instance (lazy-initialized)."""
+    global _global_display_manager
+    if _global_display_manager is None:
+        _global_display_manager = DisplayManager()
+    return _global_display_manager

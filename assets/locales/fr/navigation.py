@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+Navigation translations for Galad Islands
+"""
+
+TRANSLATIONS = {
+    "gamemode.ai_vs_ai": "IA vs IA (Spectateur)",
+    "gamemode.rail_shooter": "Rail Shooter",
+    "gamemode.player_vs_ai": "Joueur vs IA",
+    "gamemode.select_mode_message": "Sélectionnez un mode de jeu",
+    "gamemode.select_mode_title": "Mode de Jeu",
+    "menu.close": "Fermer",
+    "menu.credits": "Crédits",
+    "menu.help": "Aide",
+    "menu.no": "Non",
+    "menu.options": "Options",
+    "menu.play": "Jouer",
+    "menu.quit": "Quitter",
+    "menu.replay_cinematic": "Revoir la cinématique",
+    "menu.scenario": "Scénario",
+    "menu.scores": "Scores",
+    "menu.yes": "Oui",
+    "scores.title": "Scores",
+    "scores.empty": "Aucun score pour le moment",
+    "team_selection.message": "Sélectionnez votre camp de départ :",
+    "team_selection.team1": "La Flotte de l'Aube",
+    "team_selection.team2": "La Légion des Abysses",
+    "team_selection.title": "Choix de l'équipe",
+}

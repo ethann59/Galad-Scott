@@ -1,0 +1,358 @@
+"""
+Constants de gameplay - Valeurs numériques du jeu Galad Islands.
+Centralise all constantes magiques pour faciliter la maintenance et l'équilibrage.
+"""
+
+# =============================================================================
+# CONSTANTES DE COÛT DES units
+# =============================================================================
+
+# Coûts en or pour l'achat des units
+UNIT_COST_SCOUT = 50
+UNIT_COST_MARAUDEUR = 100
+UNIT_COST_LEVIATHAN = 200
+UNIT_COST_DRUID = 150
+UNIT_COST_KAMIKAZE = 100  # Nouveau prix pour le Kamikaze
+UNIT_COST_ARCHITECT = 120
+UNIT_COST_ATTACK_TOWER = 80
+UNIT_COST_HEAL_TOWER = 100
+
+# Dictionnaire des coûts pour l'IA
+UNIT_COSTS = {
+    "scout": UNIT_COST_SCOUT,
+    "maraudeur": UNIT_COST_MARAUDEUR,
+    "leviathan": UNIT_COST_LEVIATHAN,
+    "druid": UNIT_COST_DRUID,
+    "kamikaze": UNIT_COST_KAMIKAZE,
+    "architect": UNIT_COST_ARCHITECT,
+    "attack_tower": UNIT_COST_ATTACK_TOWER,
+    "heal_tower": UNIT_COST_HEAL_TOWER,
+}
+
+# =============================================================================
+# LIMITES D'UNITÉS PAR TYPE ET PAR ÉQUIPE
+# =============================================================================
+
+# Nombre maximum d'unités de chaque type par équipe sur le champ de bataille
+MAX_UNITS_PER_TYPE = {
+    "SCOUT": 5,
+    "MARAUDEUR": 4,
+    "LEVIATHAN": 3,
+    "DRUID": 3,
+    "ARCHITECT": 2,
+    "KAMIKAZE": 10,
+}
+
+# =============================================================================
+# CONSTANTES DE VISION ET BROUILLARD DE GUERRE
+# =============================================================================
+
+# Portée de vision des bases (en units de grille)
+BASE_VISION_RANGE = 8.0
+
+# Portées de vision par type d'unit (en units de grille)
+UNIT_VISION_SCOUT = 10.0
+UNIT_VISION_MARAUDEUR = 8.0
+UNIT_VISION_LEVIATHAN = 7.0  # Augmenté de 4.0 à 5.0 pour meilleure visibilité
+UNIT_VISION_DRUID = 8.0
+UNIT_VISION_ARCHITECT = 8.0
+UNIT_VISION_KAMIKAZE = UNIT_VISION_SCOUT  # Même vision qu'un Scout
+
+# =============================================================================
+# CONSTANTES DE PERFORMANCE ET Rendering
+# =============================================================================
+
+# Framerate
+TARGET_FPS = 60
+FRAME_TIME_MS = 1000.0  # pour les calculs de deltatime
+
+# Interface utilisateur
+HEALTH_BAR_HEIGHT = 6
+HEALTH_BAR_OFFSET = 10  # pixels au-dessus du sprite
+DEBUG_FONT_SIZE = 36
+
+# Constantes pour les modales
+MODAL_MARGIN = 20
+MODAL_PADDING = 15
+MODAL_SCROLL_SPEED = 30
+MODAL_HEADER_HEIGHT = 50
+MODAL_FOOTER_HEIGHT = 70
+MODAL_BUTTON_WIDTH = 120
+MODAL_BUTTON_HEIGHT = 40
+MODAL_SCROLLBAR_WIDTH = 15
+MODAL_ERROR_SURFACE_WIDTH = 200
+MODAL_ERROR_SURFACE_HEIGHT = 100
+MODAL_DEFAULT_MAX_WIDTH = 620
+MODAL_DEFAULT_GIF_DURATION = 100  # millisecondes
+
+# Tailles de police pour les modales
+MODAL_FONT_SIZE_SMALL = 20
+MODAL_FONT_SIZE_NORMAL = 22
+MODAL_FONT_SIZE_MEDIUM = 26
+MODAL_FONT_SIZE_LARGE = 30
+MODAL_FONT_SIZE_XLARGE = 36
+MODAL_TEXT_LINE_SPACING = 8
+MODAL_MEDIA_SPACING = 10
+
+# Constantes de la boutique - Dimensions
+SHOP_WIDTH = 900
+SHOP_HEIGHT = 650
+
+# Constantes de la boutique - Onglets
+SHOP_TAB_WIDTH = 160
+SHOP_TAB_HEIGHT = 40
+SHOP_TAB_SPACING = 10
+
+# Constantes du joueur
+PLAYER_DEFAULT_GOLD = 250
+
+# Constantes de la boutique - Items
+SHOP_ITEM_WIDTH = 200
+SHOP_ITEM_HEIGHT = 100
+SHOP_ITEMS_PER_ROW = 4
+SHOP_ITEM_SPACING_X = 15
+SHOP_ITEM_SPACING_Y = 15
+
+# Constantes de la boutique - Icônes
+SHOP_ICON_SIZE_LARGE = 64  # Icônes principales
+SHOP_ICON_SIZE_MEDIUM = 56  # Icônes d'items
+SHOP_ICON_SIZE_SMALL = 24  # Icônes d'onglets
+SHOP_ICON_SIZE_TINY = 16   # Petites icônes
+
+# Constantes de la boutique - Marges et espacements
+SHOP_MARGIN = 20
+SHOP_PADDING = 30
+SHOP_TAB_Y_OFFSET = 80
+SHOP_ITEMS_START_Y = 140
+
+# Constantes de la boutique - Interface
+SHOP_CLOSE_BUTTON_SIZE = 35
+SHOP_CLOSE_BUTTON_MARGIN = 15
+SHOP_CLOSE_X_SIZE = 8
+SHOP_CLOSE_X_THICKNESS = 3
+SHOP_SHADOW_OFFSET = 5
+SHOP_SHADOW_LAYERS = 10
+
+# Constantes de la boutique - Animations et feedback
+SHOP_FEEDBACK_DURATION = 3.0  # secondes
+SHOP_TEXT_X_OFFSET = 30
+
+# Constantes de la boutique - Or du joueur By default
+SHOP_DEFAULT_PLAYER_GOLD = 100
+
+# =============================================================================
+# EVENEMENTS / TEMPO
+# =============================================================================
+# Delay (s) before global events (kraken/storms/bandits) start appearing after game start
+INITIAL_EVENT_DELAY = 15.0
+
+# Constantes de la boutique - Polices
+SHOP_FONT_SIZE_TITLE = 32
+SHOP_FONT_SIZE_SUBTITLE = 26
+SHOP_FONT_SIZE_NORMAL = 20
+SHOP_FONT_SIZE_SMALL = 16
+SHOP_FONT_SIZE_TINY = 14
+
+# Constantes de la boutique - Prix des units
+UNIT_COST_SCOUT = 10
+UNIT_COST_MARAUDEUR = 20
+UNIT_COST_LEVIATHAN = 40
+UNIT_COST_DRUID = 30
+UNIT_COST_ARCHITECT = 30
+UNIT_COST_ATTACK_TOWER = 150
+UNIT_COST_HEAL_TOWER = 120
+
+# Seuils de couleur pour les barres de vie
+HEALTH_HIGH_THRESHOLD = 0.6  # Vert si > 60%
+HEALTH_MEDIUM_THRESHOLD = 0.3   # Orange si > 30%, Rouge si < 30%
+HEALTH_LOW_THRESHOLD = 0.3   # Rouge si < 30%, Orange entre les deux
+
+# =============================================================================
+# COULEURS (RGB)
+# =============================================================================
+
+# Couleurs de l'interface
+COLOR_OCEAN_BLUE = (0, 50, 100)
+COLOR_HEALTH_BACKGROUND = (100, 0, 0)
+COLOR_HEALTH_HIGH = (0, 200, 0)      # Vert
+COLOR_HEALTH_MEDIUM = (255, 165, 0)  # Orange
+COLOR_HEALTH_LOW = (200, 0, 0)       # Rouge
+
+# Couleurs pour les modales et interfaces
+COLOR_WHITE = (255, 255, 255)
+COLOR_GOLD = (255, 215, 0)
+COLOR_GRAY = (128, 128, 128)
+COLOR_DARK_GRAY = (64, 64, 64)
+COLOR_LIGHT_GRAY = (192, 192, 192)
+COLOR_ERROR_GRAY = (100, 100, 100)
+
+# Couleurs communes pour les boutiques
+COLOR_BLACK = (0, 0, 0)
+COLOR_GREEN_SUCCESS = (80, 200, 80)
+COLOR_RED_ERROR = (200, 80, 80)
+
+# Couleurs de placeholder pour icônes
+COLOR_PLACEHOLDER_UNIT = (100, 150, 200)
+COLOR_PLACEHOLDER_BUILDING = (150, 120, 80)
+COLOR_PLACEHOLDER_UPGRADE = (200, 150, 100)
+
+# =============================================================================
+# CONSTANTES DE MOUVEMENT ET PHYSICS
+# =============================================================================
+
+# Vitesses By default
+DEFAULT_UNIT_SPEED = 3.5
+DEFAULT_REVERSE_SPEED = -0.6
+SPEED_ACCELERATION = 0.2
+SPEED_DECELERATION = 0.1
+BOUNDARY_MARGIN = 32  # pixels pour les bordures collision
+
+# =============================================================================
+# CONSTANTES DE COMBAT
+# =============================================================================
+
+# Projectiles
+PROJECTILE_SPEED = 10.0
+PROJECTILE_DAMAGE = 10
+PROJECTILE_HEALTH = 1
+PROJECTILE_WIDTH = 20
+PROJECTILE_HEIGHT = 10
+EXPLOSION_SIZE_WIDTH = 20
+EXPLOSION_SIZE_HEIGHT = 10
+
+# Vie des units (par type) - Valeurs mises à jour from unitFactory.py
+UNIT_HEALTH_SCOUT = 60
+UNIT_HEALTH_MARAUDEUR = 130  # Était 80, mise à jour from factory
+UNIT_HEALTH_LEVIATHAN = 300  # Était 120, mise à jour from factory
+UNIT_HEALTH_DRUID = 130      # Était 70, mise à jour from factory
+UNIT_HEALTH_KAMIKAZE = 40    # unit faible
+UNIT_HEALTH_ARCHITECT = 130  # Était 75, mise à jour from factory
+
+# Vitesses des units (par type)
+UNIT_SPEED_SCOUT = 5.0
+UNIT_SPEED_MARAUDEUR = 3.5
+UNIT_SPEED_LEVIATHAN = 2.0
+UNIT_SPEED_DRUID = 3.5
+UNIT_SPEED_KAMIKAZE = 6.0    # Très rapide
+UNIT_SPEED_ARCHITECT = 3.5
+
+# Vitesses de recul des units (par type)
+UNIT_REVERSE_SPEED_SCOUT = -1.0
+UNIT_REVERSE_SPEED_MARAUDEUR = -0.6
+UNIT_REVERSE_SPEED_LEVIATHAN = -0.2
+UNIT_REVERSE_SPEED_DRUID = -0.6
+UNIT_REVERSE_SPEED_KAMIKAZE = -1.0
+UNIT_REVERSE_SPEED_ARCHITECT = -0.6
+
+# Attaques des units (par type)
+UNIT_ATTACK_SCOUT = 10
+UNIT_ATTACK_MARAUDEUR = 20
+UNIT_ATTACK_LEVIATHAN = 30
+UNIT_ATTACK_DRUID = 20
+UNIT_ATTACK_KAMIKAZE = 150   # Dégâts collision importants
+UNIT_ATTACK_ARCHITECT = 20
+
+# Attaques des bases
+BASE_ATTACK_DAMAGE = 25  # Dégâts des projectiles de base
+BASE_ATTACK_COOLDOWN = 3.0  # Cooldown entre tirs de base (secondes)
+
+# Cooldowns d'attaque des units (en secondes)
+UNIT_COOLDOWN_SCOUT = 2
+UNIT_COOLDOWN_MARAUDEUR = 4
+UNIT_COOLDOWN_LEVIATHAN = 1.5  # 1.5 secondes entre chaque attaque
+UNIT_COOLDOWN_DRUID = 4
+UNIT_COOLDOWN_KAMIKAZE = 0.5 # Cooldown très court, car il meurt after l'attaque
+UNIT_COOLDOWN_ARCHITECT = 4
+
+# Capacités spéciales
+
+SPECIAL_ABILITY_COOLDOWN = 15.0 # Cooldown générique pour les capacités spéciales
+
+# Barhamus : Bouclier de mana
+BARHAMUS_SHIELD_REDUCTION_MIN = 0.20  # 20%
+BARHAMUS_SHIELD_REDUCTION_MAX = 0.45  # 45%
+BARHAMUS_SHIELD_DURATION = 5.0        # Durée d'effet du bouclier (secondes)
+
+# NOTE: historical name "Barhamus" was used for these shield constants.
+# The Maraudeur unit uses the same values. To support a clean rename
+# without breaking existing imports, we provide MARAUDEUR_* aliases.
+# Prefer MARAUDEUR_* in new code.
+MARAUDEUR_SHIELD_REDUCTION_MIN = BARHAMUS_SHIELD_REDUCTION_MIN
+MARAUDEUR_SHIELD_REDUCTION_MAX = BARHAMUS_SHIELD_REDUCTION_MAX
+MARAUDEUR_SHIELD_DURATION = BARHAMUS_SHIELD_DURATION
+
+# Druid : Lierre volant
+DRUID_IMMOBILIZATION_DURATION = 5.0 # Durée d'immobilisation
+DRUID_PROJECTILE_SPEED = 15.0     # Vitesse du projectile druide
+
+# Architecte : Rayon d'effet
+ARCHITECT_RADIUS = 400.0           # Rayon d'effet de l'architecte
+ARCHITECT_RELOAD_FACTOR = 1.0      # Facteur de rechargement
+ARCHITECT_DURATION = 10.0          # Durée de l'effet architecte
+
+# Zasper : Invincibilité
+ZASPER_INVINCIBILITY_DURATION = 3.0 # Durée d'invincibilité de Zasper
+
+# Vie des bases
+BASE_HEALTH = 1000
+BASE_MAX_HEALTH = 1000
+
+# =============================================================================
+# CONSTANTES DE RESSOURCES
+# =============================================================================
+
+# Coffres volants
+FLYING_CHEST_SPAWN_INTERVAL = 15.0      # Intervalle d'apparition des coffres volants
+FLYING_CHEST_MAX_COUNT = 5              # Nombre maximum de coffres volants actifs
+FLYING_CHEST_GOLD_MIN = 60              # Gain minimal en or lors de la collecte
+FLYING_CHEST_GOLD_MAX = 150             # Gain maximal en or lors de la collecte
+FLYING_CHEST_LIFETIME = 25.0            # Durée before la chute automatique in l'océan
+FLYING_CHEST_SINK_DURATION = 3.0        # Durée de l'animation de chute before disparition
+
+# Ressources d'îles (plus rares, récompenses plus importantes)
+ISLAND_RESOURCE_GOLD_MIN = 200
+ISLAND_RESOURCE_GOLD_MAX = 500
+ISLAND_RESOURCE_LIFETIME = 120.0  # 2 minutes
+ISLAND_RESOURCE_MAX_COUNT = 3 # Réduit pour compenser la fréquence accrue
+ISLAND_RESOURCE_SPAWN_INTERVAL = 120.0  # every 2 minutes on average
+
+# =============================================================================
+# CONSTANTES DE POSITIONNEMENT
+# =============================================================================
+
+# Directions By default (degrés)
+ALLY_DEFAULT_DIRECTION = 180  # Alliés regardent to la droite
+ENEMY_DEFAULT_DIRECTION = 0   # Ennemis regardent to la gauche
+
+# Offsets pour le placement initial des units ennemies de test
+ENEMY_SPAWN_OFFSET_X = 150
+ENEMY_SPAWN_OFFSETS_Y = {
+    'scout': -150,
+    'maraudeur': 0,
+    'leviathan': 200,
+    'druid': 400,
+    'architect': 500
+}
+
+# =============================================================================
+# CONSTANTES DE TERRAIN ET EFFETS
+# =============================================================================
+
+# Modificateurs de vitesse
+TERRAIN_NORMAL_MODIFIER = 1.0
+TERRAIN_SLOW_MODIFIER = 0.5  # in les nuages par exemple
+TERRAIN_STOP_MODIFIER = 0.0  # Arrêt complet
+
+# Effets de pourcentage
+CLOUD_SPEED_REDUCTION = 100  # 100% pour debug print
+
+# =============================================================================
+# CONSTANTES DE VISION ET BROUILLARD DE GUERRE
+# =============================================================================
+
+# Portées de vision par type d'unit (en units de grille)
+UNIT_VISION_SCOUT = 6.0
+UNIT_VISION_MARAUDEUR = 5.0
+UNIT_VISION_LEVIATHAN = 5.0  # Augmenté de 4.0 à 5.0 pour meilleure visibilité
+UNIT_VISION_DRUID = 5.0
+UNIT_VISION_ARCHITECT = 4.0

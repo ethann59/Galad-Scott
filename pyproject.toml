@@ -1,0 +1,110 @@
+[project]
+name = "galad-islands"
+version = "1.1.1"
+description = "Jeu Galad Islands"
+authors = [
+    { name="Alluin Edouard", email="edouard.alluin@etu.univ-littoral.fr" },
+    { name="Behani Julien", email="julien.behani@etu.univ-littoral.fr" },
+    { name="Cailliau Ethann", email="ethann.cailliau@etu.univ-littoral.fr" },
+    { name="Damman Alexandre", email="alexandre.damman@etu.univ-littoral.fr" },
+    { name="Fournier Enzo", email="enzo.fournier000@etu.univ-littoral.fr" },
+    { name="Lambert Romain", email="romain.lambert@etu.univ-littoral.fr" }
+]
+
+
+
+# Configuration commitizen pour l'équipe
+[tool.commitizen]
+name = "cz_conventional_commits" 
+version_provider = "pep621"
+tag_format = "v$version"
+version_files = [
+    "pyproject.toml:version",
+    "src/version.py"
+]
+update_changelog_on_bump = true
+bump_message = "chore: bump version $current_version → $new_version"
+
+
+# Types de commits à inclure dans le changelog (pour les utilisateurs)
+changelog_incremental = true
+changelog_start_rev = "v0.1.0"
+
+# Configuration du changelog
+[tool.commitizen.changelog]
+# Exclure les types de commits non pertinents pour les utilisateurs
+exclude_commit_patterns = [
+    "^ci:",
+    "^build:",  
+    "^chore:",
+    "^docs:",
+    "^style:",
+    "^test:",
+    "^.*(workflow|pipeline|github|actions).*",
+    "^.*(requirements|dependencies).*"
+]
+
+[tool.commitizen.settings]
+# Types de commits autorisés
+allowed_types = [
+    "feat",     # Nouvelle fonctionnalité  
+    "fix",      # Correction de bug
+    "docs",     # Documentation uniquement
+    "style",    # Formatage, espaces, etc.
+    "refactor", # Refactorisation du code
+    "perf",     # Amélioration des performances
+    "test",     # Ajout ou modification de tests
+    "build",    # Système de build ou dépendances
+    "ci",       # Configuration CI
+    "chore",    # Maintenance
+    "revert"    # Annulation d'un commit
+]
+
+check_consistency = true
+use_shortcuts = true
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config --cov=src --cov-report=html:htmlcov --cov-report=term-missing"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: tests unitaires rapides",
+    "integration: tests d'intégration",
+    "performance: tests de performance",
+    "slow: tests lents à exécuter"
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning"
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "setup.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]
