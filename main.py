@@ -18,6 +18,20 @@ def setup_global_error_handling():
         # Erreur critique - écran bleu
         error_msg = f"{exc_type.__name__}: {str(exc_value)}"
         
+        # Log dans la console
+        print("\n" + "=" * 80)
+        print("ERREUR GLOBALE NON GÉRÉE - GALAD ISLANDS")
+        print("=" * 80)
+        print(f"Type: {exc_type.__name__}")
+        print(f"Message: {str(exc_value)}")
+        print(f"Fichier: {exc_traceback.tb_frame.f_code.co_filename}")
+        print(f"Ligne: {exc_traceback.tb_lineno}")
+        print(f"Timestamp: {__import__('time').strftime('%Y-%m-%d %H:%M:%S')}")
+        print("-" * 40)
+        print("STACK TRACE COMPLÈTE:")
+        traceback.print_exc()
+        print("=" * 80)
+        
         try:
             from src.ui.arcade_error import show_error_screen
             show_error_screen(
@@ -27,13 +41,9 @@ def setup_global_error_handling():
             )
         except Exception:
             # Fallback si même l'écran d'erreur plante
-            print("=" * 60)
-            print("ERREUR CRITIQUE SYSTÈME")
-            print("=" * 60)
-            print(f"ERREUR: {error_msg}")
-            print(f"CONTEXTE: {exc_traceback}")
+            print("IMPOSSIBLE D'AFFICHER L'ÉCRAN D'ERREUR!")
+            print(f"ERREUR FINALE: {error_msg}")
             print("Le jeu va se fermer automatiquement...")
-            print("=" * 60)
             pygame.time.wait(3000)
             sys.exit(1)
     
@@ -109,6 +119,9 @@ class MainMenu:
         # UI Components
         self.buttons = []
         self.particles = None
+        
+        # Navigation clavier
+        self.selected_button_index = 0
 
         # Fonts
         self.menu_font = None
@@ -393,7 +406,7 @@ class MainMenu:
             pass
 
     def _handle_keydown(self, event):
-        """Handles keyboard events."""
+        """Handles keyboard events with menu navigation."""
         if event.key == pygame.K_ESCAPE:
             if self.display_manager.is_fullscreen:
                 self.display_manager.toggle_fullscreen()
@@ -402,6 +415,20 @@ class MainMenu:
 
         elif event.key == pygame.K_F11:
             self.display_manager.toggle_fullscreen()
+            
+        # Navigation clavier dans le menu
+        elif event.key in (pygame.K_UP, pygame.K_w):
+            if self.buttons:
+                self.selected_button_index = (self.selected_button_index - 1) % len(self.buttons)
+                
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
+            if self.buttons:
+                self.selected_button_index = (self.selected_button_index + 1) % len(self.buttons)
+                
+        elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+            if self.buttons and self.selected_button_index < len(self.buttons):
+                selected_button = self.buttons[self.selected_button_index]
+                selected_button.on_click()  # Appeler directement le callback
 
     def _handle_resize(self, event):
         """Handles window resizing."""
@@ -434,9 +461,18 @@ class MainMenu:
 
         # Particles disabled
 
-        # Buttons
-        for button in self.buttons:
+        # Buttons avec surbrillance pour navigation clavier
+        for i, button in enumerate(self.buttons):
             is_pressed = self.state.button_animator.is_pressed(button)
+            
+            # Surbrillance pour le bouton sélectionné au clavier
+            if i == self.selected_button_index:
+                highlight_rect = pygame.Rect(
+                    button.rect.x - 8, button.rect.y - 8,
+                    button.rect.width + 16, button.rect.height + 16
+                )
+                pygame.draw.rect(self.surface, (255, 215, 0, 100), highlight_rect, 4, border_radius=8)
+            
             button.draw(self.surface, mouse_pos, pressed=is_pressed, font=self.menu_font)
 
         # Tip
@@ -450,6 +486,16 @@ class MainMenu:
             width, height = self.display_manager.get_size()
             self.update_notification.set_position(width, height)
             self.update_notification.draw(self.surface)
+        
+        # Indicateur de navigation clavier
+        if self.buttons:
+            nav_font = pygame.font.Font(None, 24)
+            nav_text = "↑↓ Naviguer | Entrée/Espace: Sélectionner | Échap: Quitter"
+            text_surface = nav_font.render(nav_text, True, (180, 180, 180))
+            text_rect = text_surface.get_rect(
+                center=(self.surface.get_width() // 2, self.surface.get_height() - 25)
+            )
+            self.surface.blit(text_surface, text_rect)
 
         pygame.display.update()
 
