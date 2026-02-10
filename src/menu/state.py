@@ -4,39 +4,7 @@ Encapsulates all menu state management.
 """
 
 from typing import Optional
-from src.settings.localization import LocalizationManager, get_random_tip, t
-
-
-class TipRotator:
-    """Manages automatic tip rotation."""
-
-    def __init__(self, interval: float = 5.0):
-        self.current_tip = get_random_tip()
-        self.timer = 0.0
-        self.interval = interval
-
-    def update(self, dt: float) -> bool:
-        """
-        Updates the timer and changes the tip if necessary.
-
-        Returns:
-            True if the tip changed
-        """
-        self.timer += dt
-        if self.timer >= self.interval:
-            self.current_tip = get_random_tip()
-            self.timer = 0.0
-            return True
-        return False
-
-    def get_current_tip(self) -> str:
-        """Returns the current tip."""
-        return self.current_tip
-
-    def refresh(self):
-        """Forces a tip refresh."""
-        self.current_tip = get_random_tip()
-        self.timer = 0.0
+from src.settings.localization import LocalizationManager, t
 
 
 class LanguageWatcher:
@@ -125,7 +93,6 @@ class MenuState:
 
     def __init__(self):
         self.running = True
-        self.tip_rotator = TipRotator()
         self.language_watcher = LanguageWatcher()
         # Flag set when the language is changed so callers can react once
         # (allows a single place to handle UI text refresh without double-checking)
@@ -136,9 +103,6 @@ class MenuState:
 
     def update(self, dt: float):
         """Updates all state components."""
-        # Tip rotation
-        self.tip_rotator.update(dt)
-
         # Button animation
         self.button_animator.update()
 
@@ -146,7 +110,6 @@ class MenuState:
         if self.language_watcher.check_for_changes():
             # Signal callers that a language change has occurred so they can
             # refresh textual UI components (main menu labels, captions, etc.)
-            self.tip_rotator.refresh()
             self.layout_dirty = True
             self.language_changed = True
 

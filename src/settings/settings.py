@@ -40,9 +40,6 @@ DEFAULT_CONFIG = {
     "fog_render_mode": "tiles",  # "image" or "tiles"
     "camera_sensitivity": 1.0,
     "camera_fast_multiplier": 2.5,
-    "show_tutorial": True,  # Affichage du tutoriel activé/désactivé
-    "read_tips": [],  # Liste des astuces lues pour le tutoriel
-    "cinematic_viewed": False,  # Indique si la cinématique d'intro a déjà été vue
     "key_bindings": {
         "unit_move_forward": ["z"],
         "unit_move_backward": ["s"],
@@ -230,16 +227,6 @@ class ConfigManager:
             if "key_bindings" not in self.config or not isinstance(self.config["key_bindings"], dict):
                 self.config["key_bindings"] = {}
             self.config["key_bindings"][action] = list(bindings)
-
-    def add_read_tip(self, tip_id: str) -> None:
-        """Ajoute un ID de conseil à la liste des lus et sauvegarde la config."""
-        if "read_tips" not in self.config or not isinstance(self.config["read_tips"], list):
-            self.config["read_tips"] = []
-        
-        if tip_id not in self.config["read_tips"]:
-            self.config["read_tips"].append(tip_id)
-            self.save_config()  # Sauvegarde immédiate après modification
-
 
     def _merge_nested_dicts(self, base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
         """Fusionne récursivement deux dictionnaires sans perdre les valeurs By default."""
@@ -450,33 +437,6 @@ def is_dev_mode_enabled() -> bool:
     """
     try:
         return config_manager.get('dev_mode', False)
-    except Exception:
-        return False
-
-
-def has_viewed_cinematic() -> bool:
-    """
-    Check if the intro cinematic has been viewed.
-
-    Returns:
-        True if the cinematic has been viewed, False otherwise.
-    """
-    try:
-        return config_manager.get('cinematic_viewed', False)
-    except Exception:
-        return False
-
-
-def mark_cinematic_as_viewed() -> bool:
-    """
-    Mark the intro cinematic as viewed and save the configuration.
-
-    Returns:
-        True if the save was successful, False otherwise.
-    """
-    try:
-        config_manager.set('cinematic_viewed', True)
-        return config_manager.save_config()
     except Exception:
         return False
 

@@ -66,10 +66,10 @@ from src.functions.optionsWindow import show_options_window
 from src.settings.localization import t
 from src.settings.docs_manager import get_help_path, get_credits_path, get_scenario_path
 from src.functions.resource_path import get_resource_path
-from src.settings.settings import get_project_version, is_dev_mode_enabled, has_viewed_cinematic, mark_cinematic_as_viewed
+from src.settings.settings import get_project_version, is_dev_mode_enabled
 from src.utils.update_checker import check_for_updates
 from src.ui.update_notification import UpdateNotification
-from src.ui.intro_cinematic import play_intro_cinematic
+
 
 
 # Configure logging level: DEBUG in dev mode, WARNING otherwise (to improve runtime fluidity)
@@ -125,7 +125,6 @@ class MainMenu:
 
         # Fonts
         self.menu_font = None
-        self.tip_font = None
         
         # Update notification
         self.update_notification = None
@@ -134,21 +133,7 @@ class MainMenu:
         # Layout initialization
         self._initialize_ui()
 
-        # Jouer la cinématique d'introduction au premier lancement
-        self._play_intro()
 
-    def _play_intro(self):
-        """Joue la cinématique d'introduction si c'est la première fois."""
-        # Vérifier si la cinématique a déjà été vue
-        if not has_viewed_cinematic():
-            if not play_intro_cinematic(self.surface, self.audio_manager):
-                # L'utilisateur veut quitter
-                self.state.running = False
-            else:
-                # Marquer la cinématique comme vue
-                mark_cinematic_as_viewed()
-                # Restore the main menu theme after cinematic
-                self.audio_manager.play_music(MUSIC_MAIN_THEME)
 
     def _load_background(self):
         """Loads the background image."""
@@ -212,9 +197,6 @@ class MainMenu:
         # Update fonts
         self.menu_font = pygame.font.SysFont("Arial", layout['font_size'], bold=True)
 
-        tip_layout = LayoutManager.calculate_tip_layout(height)
-        self.tip_font = pygame.font.SysFont("Arial", tip_layout['font_size'], italic=True)
-
         # Resize background
         self.bg_scaled = pygame.transform.scale(self.bg_original, (width, height))
 
@@ -264,25 +246,16 @@ class MainMenu:
                 print("Continuez à jouer normalement...")
 
     def _on_credits(self):
-        """Shows the credits with option to replay cinematic."""
+        """Shows the credits."""
         from src.functions.afficherModale import afficher_modale_credits
 
-        # Show credits modal with replay button
-        result = afficher_modale_credits(
+        # Show credits modal
+        afficher_modale_credits(
             t("menu.credits"),
             get_credits_path(),
             bg_original=self.bg_original,
             select_sound=self.audio_manager.get_select_sound()
         )
-
-        # If user clicked on "Replay Cinematic"
-        if result == "replay":
-            if not play_intro_cinematic(self.surface, self.audio_manager):
-                # L'utilisateur veut quitter
-                self.state.running = False
-            else:
-                # Restore the main menu theme after cinematic
-                self.audio_manager.play_music(MUSIC_MAIN_THEME)
 
     def _on_help(self):
         """Shows the help."""
@@ -475,9 +448,6 @@ class MainMenu:
             
             button.draw(self.surface, mouse_pos, pressed=is_pressed, font=self.menu_font)
 
-        # Tip
-        self._render_tip()
-
         # Version and dev mode indicator
         self._render_version_info()
         
@@ -499,22 +469,7 @@ class MainMenu:
 
         pygame.display.update()
 
-    def _render_tip(self):
-        """Displays the tip at the bottom of the screen."""
-        width, height = self.display_manager.get_size()
-        tip_layout = LayoutManager.calculate_tip_layout(height)
 
-        tip_text = self.state.tip_rotator.get_current_tip()
-
-        # Shadow
-        shadow = self.tip_font.render(tip_text, True, (40, 40, 40))
-        shadow_rect = shadow.get_rect(center=(width // 2 + 2, tip_layout['y_position'] + 2))
-        self.surface.blit(shadow, shadow_rect)
-
-        # Main text
-        tip_surf = self.tip_font.render(tip_text, True, (230, 230, 180))
-        tip_rect = tip_surf.get_rect(center=(width // 2, tip_layout['y_position']))
-        self.surface.blit(tip_surf, tip_rect)
 
     def _render_version_info(self):
         """Displays version and dev mode indicator in the bottom right corner."""
@@ -529,17 +484,17 @@ class MainMenu:
         if dev_mode:
             version_text += " [DEV MODE]"
 
-        # Use tip font for consistency
-        if self.tip_font:
+        # Use menu font for version display
+        if self.menu_font:
             # Shadow for version text
             shadow_color = (40, 40, 40) if not dev_mode else (100, 0, 0)  # Dark red shadow for dev mode
-            shadow = self.tip_font.render(version_text, True, shadow_color)
+            shadow = self.menu_font.render(version_text, True, shadow_color)
             shadow_rect = shadow.get_rect(bottomright=(width - 20, height - 20))
             self.surface.blit(shadow, shadow_rect)
 
             # Main version text
             text_color = (230, 230, 180) if not dev_mode else (255, 100, 100)  # Light red for dev mode
-            version_surf = self.tip_font.render(version_text, True, text_color)
+            version_surf = self.menu_font.render(version_text, True, text_color)
             version_rect = version_surf.get_rect(bottomright=(width - 18, height - 18))
             self.surface.blit(version_surf, version_rect)
 

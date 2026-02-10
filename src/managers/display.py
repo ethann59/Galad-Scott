@@ -209,19 +209,6 @@ class LayoutManager:
         }
 
     @staticmethod
-    def calculate_tip_layout(screen_height: int) -> dict:
-        """
-        Calculates the layout for the tip at the bottom of the screen.
-
-        Returns:
-            Dict containing: font_size, y_position
-        """
-        return {
-            'font_size': max(12, int(screen_height * 0.025)),
-            'y_position': screen_height - max(20, int(screen_height * 0.04))
-        }
-
-    @staticmethod
     def create_adaptive_font(screen_width: int, screen_height: int, 
                             size_ratio: float = 0.025, bold: bool = False) -> pygame.font.Font:
         """Creates a font whose size adapts to screen dimensions."""

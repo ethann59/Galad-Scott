@@ -84,21 +84,6 @@ class LocalizationManager:
             "en": "English"
         }
     
-    def get_all_tips(self):
-        """Retourne all tips in la langue actuelle"""
-        tips = []
-        i = 0
-        while f"tip.{i}" in self._translations:
-            tips.append(self._translations[f"tip.{i}"])
-            i += 1
-        return tips
-    
-    def get_random_tip(self):
-        """Retourne une tip aléatoire in la langue actuelle"""
-        import random
-        tips = self.get_all_tips()
-        return random.choice(tips) if tips else self.t('system.no_tips_available')
-    
     def _load_tool_translations(self, tool_name: str):
         """Charge les traductions spécifiques à un outil si disponibles.
 
@@ -179,11 +164,3 @@ def get_current_language():
 def get_available_languages():
     """Fonction globale pour obtenir les langues disponibles"""
     return _localization_manager.get_available_languages()
-
-def get_all_tips():
-    """Fonction globale pour obtenir all tips traduites"""
-    return _localization_manager.get_all_tips()
-
-def get_random_tip():
-    """Fonction globale pour obtenir une tip aléatoire traduite"""
-    return _localization_manager.get_random_tip()
