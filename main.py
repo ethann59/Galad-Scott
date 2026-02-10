@@ -57,14 +57,11 @@ from src.managers.display import DisplayManager, LayoutManager, get_display_mana
 from src.managers.audio import AudioManager, VolumeWatcher
 from src.menu.state import MenuState
 from src.ui.ui_component import Button
-from src.ui.generic_modal import GenericModal
 from src.constants.assets import MUSIC_MAIN_THEME, MUSIC_IN_GAME
 import src.settings.settings as settings
 from src.rail_shooter import run_rail_shooter
-from src.functions.afficherModale import afficher_modale
 from src.functions.optionsWindow import show_options_window
 from src.settings.localization import t
-from src.settings.docs_manager import get_help_path, get_credits_path, get_scenario_path
 from src.functions.resource_path import get_resource_path
 from src.settings.settings import get_project_version, is_dev_mode_enabled
 from src.utils.update_checker import check_for_updates
@@ -246,51 +243,36 @@ class MainMenu:
                 print("Continuez à jouer normalement...")
 
     def _on_credits(self):
-        """Shows the credits."""
-        from src.functions.afficherModale import afficher_modale_credits
-
-        # Show credits modal
-        afficher_modale_credits(
-            t("menu.credits"),
-            get_credits_path(),
-            bg_original=self.bg_original,
-            select_sound=self.audio_manager.get_select_sound()
-        )
+        """Affiche les crédits adaptés à l'arcade."""
+        try:
+            from src.functions.arcade_menus import show_arcade_credits
+            show_arcade_credits()
+        except Exception as e:
+            print(f"Erreur affichage crédits: {e}")
 
     def _on_help(self):
-        """Shows the help."""
-        afficher_modale(t("menu.help"), get_help_path(), bg_original=self.bg_original, select_sound=self.audio_manager.get_select_sound())
+        """Affiche l'aide adaptée à l'arcade."""
+        try:
+            from src.functions.arcade_menus import show_arcade_help
+            show_arcade_help()
+        except Exception as e:
+            print(f"Erreur affichage aide: {e}")
 
     def _on_scores(self):
-        """Shows the score screen."""
+        """Affiche le tableau des scores adapté à l'arcade."""
         try:
+            from src.functions.arcade_menus import show_arcade_scores
             from src.utils.score_manager import get_score_lines
-            score_lines = get_score_lines(limit=10)
-        except Exception:
-            score_lines = []
-
-        modal = GenericModal(
-            title_key="scores.title",
-            message_key="scores.empty" if not score_lines else "scores.title",
-            buttons=[("close", "menu.close")],
-            extra_lines=score_lines,
-        )
-        modal.open(self.surface)
-        clock = pygame.time.Clock()
-
-        while modal.is_active():
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    modal.close()
-                    self.state.running = False
-                    return
-                modal.handle_event(event, self.surface)
-
-            if self.bg_scaled:
-                self.surface.blit(self.bg_scaled, (0, 0))
-            modal.render(self.surface)
-            pygame.display.flip()
-            clock.tick(60)
+            
+            # Récupère les scores
+            try:
+                score_lines = get_score_lines(limit=10)
+            except Exception:
+                score_lines = []
+            
+            show_arcade_scores(score_lines)
+        except Exception as e:
+            print(f"Erreur affichage scores: {e}")
 
     def _on_quit(self):
         """Quits the application."""

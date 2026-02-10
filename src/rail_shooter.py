@@ -49,6 +49,7 @@ class RailShooterEngine:
         self._last_dt = 0.0
         self._background_speed = 80.0
         self._projectile_speed_multiplier = 2.5
+        self._player_projectile_speed_multiplier = 6.0  # Balles joueur encore plus rapides que les ennemis
         self._score_saved = False
         
         # Variables pour la saisie de nom style borne d'arcade
@@ -58,6 +59,7 @@ class RailShooterEngine:
         self._letter_index = 0  # Index de la lettre actuelle
         self._char_position = 0  # Position dans le nom
         self._available_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
+        self._game_over_pause = 0.0  # Pause avant saisie pour éviter validation accidentelle
 
         self.collision_processor: Optional[CollisionProcessor] = None
         self.lifetime_processor: Optional[LifetimeProcessor] = None
@@ -120,8 +122,8 @@ class RailShooterEngine:
     def _init_ecs(self) -> None:
         es.clear_database()
         es._processors.clear()
-        es._world = es
-
+        
+        # Initialize ECS properly without setting _world
         self.collision_processor = CollisionProcessor(graph=None)
         self.lifetime_processor = LifetimeProcessor()
         es.add_processor(self.collision_processor, priority=0)
@@ -160,7 +162,7 @@ class RailShooterEngine:
             if event.type == pygame.QUIT:
                 self.running = False
                 return
-            if self._entering_name and event.type == pygame.KEYDOWN:
+            if self._entering_name and event.type == pygame.KEYDOWN and self._game_over_pause <= 0:
                 self._handle_name_input_arcade(event)
                 continue
             if event.type == pygame.KEYDOWN and controls.matches_action(controls.ACTION_SYSTEM_PAUSE, event):
@@ -176,10 +178,20 @@ class RailShooterEngine:
             return
 
         if self.game_over:
-            if self._name_confirmed:
+            if self._entering_name:
+                # Gestion de la pause avant saisie
+                if self._game_over_pause > 0:
+                    self._game_over_pause -= dt
+                # Sinon, la saisie est gérée dans _handle_events
+            elif self._name_confirmed:
                 self.game_over_timer -= dt
                 if self.game_over_timer <= 0:
                     self.running = False
+            else:
+                # Démarrer la saisie de nom après un délai
+                self.game_over_timer -= dt
+                if self.game_over_timer <= 0:
+                    self._start_name_entry()
             return
 
         self._update_player(dt)
@@ -216,10 +228,11 @@ class RailShooterEngine:
         pos.x += dx
         pos.y += dy
 
-        width, height = self.window.get_size()
-        margin = 32
-        pos.x = max(margin, min(width - margin, pos.x))
-        pos.y = max(margin, min(height - margin, pos.y))
+        if self.window is not None:
+            width, height = self.window.get_size()
+            margin = 32
+            pos.x = max(margin, min(width - margin, pos.x))
+            pos.y = max(margin, min(height - margin, pos.y))
 
         if self.player_fire_cooldown > 0:
             self.player_fire_cooldown -= dt
@@ -245,13 +258,24 @@ class RailShooterEngine:
         spawn_y = random.uniform(margin, height - margin)
         spawn_x = width + 80
 
-        enemy_type = random.choice(
-            [
-                ("scout", SpriteID.ENEMY_SCOUT, 80, 100, 2, 140.0),
-                ("maraudeur", SpriteID.ENEMY_MARAUDEUR, 110, 120, 4, 120.0),
-                ("kamikaze", SpriteID.ENEMY_KAMIKAZE, 110, 90, 2, 180.0),
-            ]
-        )
+        # Progression des ennemis basée sur le score
+        enemy_types = []
+        
+        # Scouts: toujours disponibles (plus fréquents au début)
+        scout_weight = 70 if self.score < 100 else (50 if self.score < 300 else 30)
+        enemy_types.extend([("scout", SpriteID.ENEMY_SCOUT, 80, 100, 2, 140.0)] * scout_weight)
+        
+        # Maraudeurs: apparaissent après 50 points, deviennent fréquents
+        if self.score >= 50:
+            maraudeur_weight = 20 if self.score < 200 else (50 if self.score < 500 else 60)
+            enemy_types.extend([("maraudeur", SpriteID.ENEMY_MARAUDEUR, 110, 120, 4, 120.0)] * maraudeur_weight)
+        
+        # Kamikazes: rares, apparaissent après 150 points, oneshot mais dangereux
+        if self.score >= 150:
+            kamikaze_weight = 5 if self.score < 400 else 10
+            enemy_types.extend([("kamikaze", SpriteID.ENEMY_KAMIKAZE, 110, 90, 1, 200.0)] * kamikaze_weight)
+        
+        enemy_type = random.choice(enemy_types)
         kind, sprite_id, sprite_w, sprite_h, hp, speed = enemy_type
 
         enemy = es.create_entity()
@@ -362,7 +386,14 @@ class RailShooterEngine:
             if vel.currentSpeed == 0:
                 continue
             direction_rad = math.radians(pos.direction)
-            speed = vel.currentSpeed * self._projectile_speed_multiplier
+            
+            # Différencier vitesse projectiles joueur vs ennemis
+            team = es.component_for_entity(ent, TeamComponent) if es.has_component(ent, TeamComponent) else None
+            if team and team.team_id == Team.ALLY:
+                speed = vel.currentSpeed * self._player_projectile_speed_multiplier
+            else:
+                speed = vel.currentSpeed * self._projectile_speed_multiplier
+                
             pos.x += -math.cos(direction_rad) * speed * dt
             pos.y += -math.sin(direction_rad) * speed * dt
 
@@ -438,13 +469,13 @@ class RailShooterEngine:
 
         if not es.entity_exists(self.player_id):
             self.game_over = True
-            self._start_name_entry()
+            self.game_over_timer = 1.5  # Délai avant de commencer la saisie
             return
 
         health = es.component_for_entity(self.player_id, HealthComponent)
         if health.currentHealth <= 0:
             self.game_over = True
-            self._start_name_entry()
+            self.game_over_timer = 1.5  # Délai avant de commencer la saisie
 
     def _render(self) -> None:
         if self.window is None:
@@ -481,6 +512,9 @@ class RailShooterEngine:
             y += tile_h
 
     def _render_sprites(self) -> None:
+        if self.window is None:
+            return
+            
         for ent, (pos, sprite) in es.get_components(PositionComponent, SpriteComponent):
             surface = sprite.surface or sprite.image
             if surface is None:
@@ -509,7 +543,15 @@ class RailShooterEngine:
             self.window.blit(over_surface, rect)
 
             if self._entering_name and not self._name_confirmed:
-                self._render_name_prompt()
+                if self._game_over_pause <= 0:
+                    self._render_name_prompt()
+                else:
+                    # Affichage du délai restant
+                    font = pygame.font.SysFont("Arial", 24, bold=True)
+                    pause_text = f"Saisie dans {self._game_over_pause:.1f}s..."
+                    pause_surface = font.render(pause_text, True, (255, 255, 100))
+                    pause_rect = pause_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 80))
+                    self.window.blit(pause_surface, pause_rect)
 
     def _cleanup(self) -> None:
         if self.created_local_window:
@@ -531,6 +573,9 @@ class RailShooterEngine:
             self._entering_name = True
             self._name_input = ""
             self._name_confirmed = False
+            self._letter_index = 0  # Reset index lettre
+            self._char_position = 0  # Reset position dans nom
+            self._game_over_pause = 2.0  # 2 secondes de pause avant saisie
 
 
 
@@ -591,7 +636,64 @@ class RailShooterEngine:
         if len(self._name_input) < self._char_position:
             self._char_position = len(self._name_input)
 
-
+    def _render_name_prompt(self) -> None:
+        """Affiche l'interface de saisie de nom style arcade."""
+        if self.window is None:
+            return
+            
+        font = pygame.font.SysFont("Arial", 24, bold=True)
+        big_font = pygame.font.SysFont("Arial", 32, bold=True)
+        
+        # Position centrale
+        width, height = self.window.get_size()
+        center_x = width // 2
+        center_y = height // 2 + 80
+        
+        # Titre
+        title_surface = big_font.render("ENTREZ VOTRE NOM:", True, (255, 255, 100))
+        title_rect = title_surface.get_rect(center=(center_x, center_y - 60))
+        self.window.blit(title_surface, title_rect)
+        
+        # Nom actuel avec curseur
+        name_display = self._name_input + "_" * (8 - len(self._name_input))
+        name_chars = list(name_display)
+        
+        # Affichage caractère par caractère
+        char_width = 30
+        start_x = center_x - (len(name_chars) * char_width) // 2
+        
+        for i, char in enumerate(name_chars):
+            color = (255, 255, 255)
+            if i == self._char_position:
+                # Caractère sélectionné
+                if i < len(self._name_input):
+                    char = self._available_chars[self._letter_index]  # Montre la lettre sélectionnée
+                else:
+                    char = self._available_chars[self._letter_index]  # Nouvelle lettre
+                color = (255, 255, 0)  # Jaune pour sélection
+                
+                # Fond de sélection
+                pygame.draw.rect(self.window, (80, 80, 150), 
+                               (start_x + i * char_width - 5, center_y - 20, char_width - 10, 40))
+            
+            char_surface = font.render(char, True, color)
+            char_rect = char_surface.get_rect(center=(start_x + i * char_width, center_y))
+            self.window.blit(char_surface, char_rect)
+        
+        # Instructions
+        instructions = [
+            "↑↓: Changer lettre",
+            "→: Valider lettre", 
+            "←: Retour",
+            "Entrée: Confirmer nom"
+        ]
+        
+        y_offset = center_y + 60
+        for instruction in instructions:
+            inst_surface = font.render(instruction, True, (200, 200, 200))
+            inst_rect = inst_surface.get_rect(center=(center_x, y_offset))
+            self.window.blit(inst_surface, inst_rect)
+            y_offset += 25
 
 
 def run_rail_shooter(window: Optional[pygame.Surface] = None, audio_manager=None) -> None:

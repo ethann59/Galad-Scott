@@ -6,6 +6,31 @@ import pygame
 import sys
 
 
+def _apply_settings(music_vol: int, effects_vol: int, lang: str) -> None:
+    """Applique les réglages choisis."""
+    try:
+        # Conversion des pourcentages en valeurs pygame (0.0 à 1.0)
+        music_level = music_vol / 100.0
+        effects_level = effects_vol / 100.0
+        
+        # Application du volume musique
+        pygame.mixer.music.set_volume(music_level)
+        
+        # Sauvegarde dans la configuration si possible
+        try:
+            from src.settings.settings import config_manager
+            config_manager.set("music_volume", music_level)
+            config_manager.set("effects_volume", effects_level)
+            config_manager.set("language", lang.lower())
+            config_manager.save()
+            print(f"✅ Options appliquées: Musique={music_vol}%, Effets={effects_vol}%, Langue={lang}")
+        except Exception:
+            print(f"⚠️ Options appliquées temporairement: Musique={music_vol}%, Effets={effects_vol}%")
+            
+    except Exception as e:
+        print(f"❌ Erreur application options: {e}")
+
+
 def show_options_window() -> None:
     """Affiche un panneau d'options ultra-simplifié et sécurisé."""
     try:
@@ -60,7 +85,9 @@ def show_options_window() -> None:
                         elif selected == 2:  # Langue
                             lang = "EN" if lang == "FR" else "FR"
                     elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                        if selected == 3:  # Fermer
+                        if selected == 3:  # Appliquer et fermer
+                            # Appliquer les changements
+                            _apply_settings(music_vol, effects_vol, lang)
                             running = False
             
             # Rendu simple
@@ -78,7 +105,7 @@ def show_options_window() -> None:
                 f"Musique: {music_vol}%",
                 f"Effets: {effects_vol}%", 
                 f"Langue: {lang}",
-                "Fermer"
+                "Appliquer et fermer"
             ]
             
             for i, text in enumerate(options_text):
@@ -94,7 +121,7 @@ def show_options_window() -> None:
             # Instructions
             instructions = [
                 "↑↓: Naviguer  ←→: Ajuster",
-                "Entrée: Sélectionner  Échap: Fermer"
+                "Entrée: Appliquer  Échap: Annuler"
             ]
             
             inst_y = surface.get_height() - 100
