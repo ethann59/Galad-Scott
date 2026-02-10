@@ -1,8 +1,6 @@
-esper==3.4
-llvmlite==0.44.0
-numba==0.61.2
-numpy==2.2.6
+# Core dependencies for Galad Scott Rail Shooter
 pygame==2.6.1
+esper==3.4
 Pillow==10.4.0
 tomli==1.2.0
 requests>=2.31.0

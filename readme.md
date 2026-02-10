@@ -1,116 +1,103 @@
-# Galad Islands
+# Galad Scott
 
-A strategic real-time strategy game developed with PyGame featuring procedurally generated islands, advanced AI systems, and tactical combat mechanics.
+Un jeu de rail shooter d'arcade développé avec PyGame, inspiré de l'univers de Galad Islands. Optimisé pour bornes d'arcade avec des contrôles simples et une interface adaptée.
 
-[![Version](https://img.shields.io/badge/version-0.13.0-blue.svg)](https://github.com/Fydyr/Galad-Islands)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/ethann59/Galad-Scott)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Documentation](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://fydyr.github.io/Galad-Islands/)
 
 ## Description
 
-Galad Islands is a strategy game where players explore procedurally generated islands, manage resources, build defensive structures, and command units with specialized abilities. The game features:
+Galad Scott est un rail shooter d'arcade où les joueurs contrôlent un vaisseau et affrontent des vagues d'ennemis. Le jeu propose :
 
-- **Procedural Generation**: Dynamically generated islands with varied terrain
-- **Advanced AI Systems**: Multiple unit classes with unique behaviors (Scout, Architect, Druid, Marauder, Leviathan)
-- **Strategic Combat**: Tactical combat system with specialized unit abilities
-- **Resource Management**: Gather resources, build towers, and upgrade units
-- **Dynamic Events**: Random events including Kraken attacks, bandits, storms, and treasure chests
-- **ECS Architecture**: Built on Entity-Component-System pattern using Esper
+- **Gameplay Arcade** : Action rapide avec contrôles simples (clavier/manette)
+- **Système de Score** : Tableau des scores avec saisie de nom style arcade
+- **Interface Adaptée** : Menus simplifiés pour utilisation en borne d'arcade
+- **Ennemis Variés** : Scouts, Maraudeurs et Kamikazes avec comportements distincts
+- **Progression Équilibrée** : Difficulté croissante basée sur le score
+- **Gestion d'Erreur** : Écrans d'erreur style arcade avec fermeture automatique
 
 ## Installation
 
-### Quick Setup
+### Installation Rapide
 
-Clone the repository and run the automated setup:
-
-```bash
-git clone https://github.com/Fydyr/Galad-Islands.git
-cd Galad-Islands
-python setup_dev.py
-```
-
-The `setup_dev.py` script automatically:
-
-- Creates a virtual environment
-- Installs all game dependencies
-- Installs development dependencies (pytest, mkdocs, commitizen, etc.)
-
-### Manual Installation
-
-If you prefer manual installation:
+Clonez le dépôt et installez les dépendances :
 
 ```bash
-# Install game dependencies
+git clone https://github.com/ethann59/Galad-Scott.git
+cd Galad-Scott
 pip install -r requirements.txt
-
-# Install development dependencies (optional)
-pip install -r requirements-dev.txt
 ```
 
-## How to Run
+### Environnement Virtuel (Recommandé)
 
-To start the game:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# ou
+.venv\Scripts\activate.bat  # Windows
+pip install -r requirements.txt
+```
+
+## Comment Jouer
+
+Pour lancer le jeu :
 
 ```bash
 python main.py
 ```
 
-## Dependencies
+### Contrôles
 
-### Core Game Dependencies
+**Déplacement :**
+- `↑/Z` : Monter
+- `↓/S` : Descendre  
+- `←/Q` : Aller à gauche
+- `→/D` : Aller à droite
 
-- **[pygame](https://www.pygame.org/)** - Game framework
-- **[numpy](https://numpy.org/)** - Numerical computing
-- **[numba](https://numba.pydata.org/)** - JIT compilation for performance
-- **[llvmlite](https://llvmlite.readthedocs.io/)** - LLVM backend for Numba
-- **[esper](https://esper.readthedocs.io/)** - Entity-Component-System framework
-- **[Pillow](https://python-pillow.org/)** - Image processing
-- **[tomli](https://tomli.readthedocs.io/)** - TOML configuration parsing
-- **[scikit-learn](https://scikit-learn.org/)** - Machine learning for AI systems
-- **[joblib](https://joblib.readthedocs.io/)** - Efficient serialization
-- **[requests](https://requests.readthedocs.io/)** - HTTP library for update checking
-- **[packaging](https://packaging.pypa.io/)** - Version comparison utilities
+**Combat :**
+- `ESPACE` : Tirer
+- `Clic souris` : Tirer
 
-### Development Dependencies
+**Menu :**
+- `↑↓` : Naviguer dans les menus
+- `ENTRÉE` : Valider
+- `ÉCHAP` : Retour/Quitter
 
-- **[pytest](https://docs.pytest.org/)** - Testing framework
-- **[pytest-cov](https://pytest-cov.readthedocs.io/)** - Coverage reporting
-- **[pytest-mock](https://pypi.org/project/pytest-mock/)** - Mocking utilities
-- **[mkdocs](https://www.mkdocs.org/)** - Documentation generator
-- **[mkdocs-material](https://squidfunk.github.io/mkdocs-material/)** - Material theme for docs
-- **[mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/)** - Internationalization for docs
-- **[commitizen](https://commitizen-tools.github.io/commitizen/)** - Conventional commits
-- **[pyinstaller](https://pyinstaller.org/)** - Executable builder
-- **[psutil](https://psutil.readthedocs.io/)** - System monitoring
-- **[tqdm](https://tqdm.github.io/)** - Progress bars
+## Dépendances
 
-## Features
+### Dépendances Principales
+
+- **[pygame](https://www.pygame.org/)** - Framework de jeu
+- **[esper](https://esper.readthedocs.io/)** - Système Entity-Component-System
+- **[Pillow](https://python-pillow.org/)** - Traitement d'images pour les sprites
+- **[tomli](https://tomli.readthedocs.io/)** - Configuration TOML
+- **[requests](https://requests.readthedocs.io/)** - Vérification des mises à jour
+- **[packaging](https://packaging.pypa.io/)** - Comparaison de versions
+
+## Fonctionnalités
 
 ### Gameplay
 
-- **Multiple Unit Classes**: Scout, Architect, Druid, Marauder, Leviathan, Kamikaze
-- **Special Abilities**: Each unit has unique tactical abilities (vine snare, kamikaze attack, etc.)
-- **Tower System**: Build defensive and healing towers
-- **Resource Economy**: Gather resources and manage your economy
-- **Fog of War**: Dynamic vision system with line-of-sight mechanics
-- **Team-based Combat**: Multiple factions with different strategies
+- **Rail Shooter Classique** : Déplacement libre du vaisseau sur l'écran
+- **Système de Tir** : Cadence de tir optimisée pour l'arcade
+- **Ennemis Variés** :
+  - **Scouts** : Rapides et agiles, zigzaguent
+  - **Maraudeurs** : Tirent en rafales, résistants
+  - **Kamikazes** : Chargent vers le joueur, oneshot mais dangereux
+- **Progression Équilibrée** : Les ennemis apparaissent progressivement selon le score
+- **Système de Score** : Chaque ennemi rapporte 10 points
 
-### Technical Features
+### Interface Arcade
 
-- **Entity-Component-System (ECS)**: Modular architecture using Esper
-- **Performance Optimized**: Numba JIT compilation for critical paths
-- **AI Systems**: FSM-based AI for different unit behaviors
-- **Localization Support**: Multi-language support (French/English)
-- **Configuration System**: JSON-based configuration with GUI tool
-- **Automatic Updates**: Built-in update checker with GitHub integration
-- **Comprehensive Testing**: Unit, integration, and performance tests
+- **Navigation Clavier** : Tous les menus navigables au clavier/manette
+- **Saisie de Nom Style Arcade** : Interface dédiée pour les high scores
+- **Options Simplifiées** : Volume musique/effets, langue
+- **Gestion d'Erreur Robuste** : Écrans d'erreur style borne avec auto-fermeture
 
 ## Configuration
 
-### Game Configuration
-
-The game uses `galad_config.json` for configuration. Key settings include:
+Le jeu utilise `galad_config.json` pour la configuration :
 
 ```json
 {
@@ -118,136 +105,56 @@ The game uses `galad_config.json` for configuration. Key settings include:
   "dev_mode": false,
   "language": "fr",
   "fullscreen": false,
-  "resolution": "1920x1080"
+  "resolution": "1920x1080",
+  "music_volume": 0.4,
+  "effects_volume": 0.56
 }
 ```
 
-### Update Checking
+## Développement
 
-The game automatically checks for updates on GitHub at startup:
-
-- **Checks once per day** to minimize API requests
-- **Disabled in dev mode** (`dev_mode: true`)
-- **Configurable** via Options menu or `galad_config.json`
-- **Displays notifications** in main menu when updates are available
-- **Cached results** in `.update_cache.json`
-
-To manually check for updates, use the "Check now" button in the Options menu.
-
-## Development
-
-### Running Tests
+### Lancement des Tests
 
 ```bash
-# Run all tests
+# Lancer tous les tests
 python run_tests.py
 
-# Run with coverage
+# Tests avec couverture
 pytest --cov=src --cov-report=html
 
-# Run specific test types
-pytest -m unit          # Unit tests only
-pytest -m integration   # Integration tests only
-pytest -m performance   # Performance tests only
+# Tests spécifiques 
+pytest tests/test_rail_shooter.py
 ```
 
-### Building Documentation
-
-```bash
-# Serve documentation locally
-mkdocs serve
-
-# Build static documentation
-mkdocs build
-```
-
-### Creating Releases
-
-This project uses [Commitizen](https://commitizen-tools.github.io/commitizen/) for version management:
-
-```bash
-# Bump version and create changelog
-cz bump
-
-# Manual versioning
-cz bump --increment MAJOR|MINOR|PATCH
-```
-
-### Building Executables
-
-To create a standalone executable:
-
-```bash
-pyinstaller --onefile main.py --name galad-islands --add-data "assets:assets"
-```
-
-## Project Structure
+### Structure du Projet (Simplifiée)
 
 ```text
-Galad-Islands/
-├── assets/                    # Game assets (sprites, sounds, music, fonts)
-├── docs/                      # MkDocs documentation (FR/EN)
-├── src/                       # Source code
-│   ├── algorithms/            # Pathfinding and search algorithms
-│   ├── components/            # ECS components
-│   │   ├── ai/               # AI-related components
-│   │   ├── core/             # Core gameplay components
-│   │   ├── events/           # Event system components
-│   │   ├── globals/          # Global state components
-│   │   ├── properties/       # Entity properties
-│   │   └── special/          # Special ability components
-│   ├── constants/             # Game constants and enums
-│   ├── factory/               # Entity factory classes
-│   ├── functions/             # Utility functions
-│   ├── ia/                    # AI implementations
-│   │   ├── architect/        # Architect AI (min-max, pathfinding)
-│   │   ├── ia_druid/         # Druid AI (A*, minimax)
-│   │   ├── ia_maraudeur/     # Marauder AI
-│   │   ├── ia_scout/         # Scout AI (FSM-based)
-│   │   ├── leviathan/        # Leviathan AI (decision tree)
-│   │   └── models/           # AI models and training data
-│   ├── initialization/        # Game initialization logic
-│   ├── managers/              # Manager classes (audio, display, etc.)
-│   ├── menu/                  # Main menu system
-│   ├── models/                # Data models
-│   ├── processeurs/           # ECS processors (systems)
-│   │   ├── ability/          # Special ability processors
-│   │   ├── ai/               # AI processors
-│   │   ├── economy/          # Economy and resource processors
-│   │   └── events/           # Event handling processors
-│   ├── settings/              # Configuration and settings management
-│   ├── systems/               # Core game systems (physics, combat, etc.)
-│   ├── ui/                    # User interface components
-│   └── utils/                 # Utility modules
-├── tests/                     # Test suite (unit, integration, performance)
-├── scripts/                   # Build and utility scripts
-├── setup/                     # Setup and hook installation scripts
-├── tools/                     # Development tools
-├── .github/                   # GitHub workflows and CI/CD
-├── hooks/                     # Git hooks
-├── main.py                    # Game entry point
-├── setup_dev.py               # Development environment setup
-├── run_tests.py               # Test runner
-├── pyproject.toml             # Project configuration (pytest, commitizen)
-├── mkdocs.yml                 # Documentation configuration
-├── requirements.txt           # Production dependencies
-└── requirements-dev.txt       # Development dependencies
+Galad-Scott/
+├── assets/                    # Ressources du jeu (sprites, sons, musique, fonts)
+├── src/                       # Code source
+│   ├── components/            # Composants ECS
+│   │   └── core/             # Composants principaux (position, health, etc.)
+│   ├── constants/             # Constantes du jeu
+│   ├── functions/             # Fonctions utilitaires
+│   │   └── arcade_menus.py   # Menus simplifiés pour arcade
+│   ├── managers/              # Gestionnaires (audio, display, etc.)
+│   ├── processeurs/           # Processeurs ECS (systèmes)
+│   ├── settings/              # Configuration et paramètres
+│   ├── ui/                    # Interface utilisateur
+│   │   └── arcade_error.py   # Système d'erreur arcade
+│   └── utils/                 # Modules utilitaires
+├── main.py                    # Point d'entrée du jeu
+├── rail_shooter.py            # Moteur principal du rail shooter
+└── requirements.txt           # Dépendances de production
 ```
 
-### Commit Convention
+## Auteurs
 
-This project follows [Conventional Commits](https://www.conventionalcommits.org/):
+### Galad Scott
+- **Cailliau Ethann** - Développement et adaptation arcade
 
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation changes
-- `refactor:` Code refactoring
-- `perf:` Performance improvements
-- `test:` Test additions/modifications
-- `chore:` Maintenance tasks
-
-## Authors
-
+### Basé sur Galad Islands
+Projet original créé par :
 - **Alluin Edouard** - <edouard.alluin@etu.univ-littoral.fr>
 - **Behani Julien** - <julien.behani@etu.univ-littoral.fr>
 - **Cailliau Ethann** - <ethann.cailliau@etu.univ-littoral.fr>
@@ -255,18 +162,14 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 - **Fournier Enzo** - <enzo.fournier000@etu.univ-littoral.fr>
 - **Lambert Romain** - <romain.lambert@etu.univ-littoral.fr>
 
-## Documentation
-
-For detailed documentation, visit: [https://fydyr.github.io/Galad-Islands/](https://fydyr.github.io/Galad-Islands/)
-
-- **User Guide**: Installation, gameplay, controls
-- **Developer Guide**: Architecture, API reference, systems
-- **Configuration**: Settings, localization, debugging
-
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
 
-## Acknowledgments
+## Remerciements
 
-Built with PyGame and the Esper ECS framework. Special thanks to all contributors and the open-source community.
+Construit avec PyGame et le framework ECS Esper. Remerciements spéciaux à l'équipe originale de Galad Islands et à la communauté open-source.
+
+### Adaptation Arcade
+
+Galad Scott est une version simplifiée et optimisée pour borne d'arcade du projet original Galad Islands. Les fonctionnalités RTS complexes ont été remplacées par un gameplay rail shooter accessible.

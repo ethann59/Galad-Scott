@@ -104,7 +104,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/
-          key: ${{ runner.os }}-pyinstaller-${{ hashFiles('build.spec', 'main.py', 'tools/galad_config.py') }}
+          key: ${{ runner.os }}-pyinstaller-${{ hashFiles('build.spec', 'main.py') }}
           restore-keys: |
             ${{ runner.os }}-pyinstaller-
 
@@ -153,46 +153,44 @@ jobs:
           tag_name: ${{ github.ref_name }}
           # Use prerelease when the tag's commit is present in unstable branch
           prerelease: ${{ steps.check.outputs.is_unstable == 'true' }}
-          name: "Galad Islands ${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pre-release)' || '' }}"
+          name: "Galad Scott - Version${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pre-release)' || '' }}"
           body: |
-            🎮 **Galad Islands - Version ${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pre-release)' || '' }}**
+            🎮 **Galad Scott - Version ${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pre-release)' || '' }}**
             
             📥 **Download the game for your platform:**
-            - **Windows**: `galad-islands-windows.zip`
-            - **Linux**: `galad-islands-Linux.zip` 
-            - **macOS**: `galad-islands-macOS.zip`
+            - **Windows**: `galad-scott-windows.zip`
+            - **Linux**: `galad-scott-Linux.zip` 
+            - **macOS**: `galad-scott-macOS.zip`
             
             📦 **Each archive contains:**
-            - `galad-islands`: The main game
-            - `galad-config-tool`: Standalone configuration tool (Tkinter)
+            - `galad-scott`: The main game
             
             📖 See the included `README.md` file for installation instructions.
             
             🔗 **Links:**
-            - [Complete Documentation](https://fydyr.github.io/Galad-Islands/)
-            - [Changelog (French)](https://github.com/Fydyr/Galad-Islands/blob/main/CHANGELOG.md)
-            - [Changelog (English)](https://github.com/Fydyr/Galad-Islands/blob/main/CHANGELOG_EN.md)
+            - [Complete Documentation](https://ethann59.github.io/Galad-Scott/)
+            - [Changelog (French)](https://github.com/ethann59/Galad-Scott/blob/main/CHANGELOG.md)
+            - [Changelog (English)](https://github.com/ethann59/Galad-Scott/blob/main/CHANGELOG_EN.md)
             
             ---
             
-            🎮 **Galad Islands - Version ${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pré-version)' || '' }}**
+            🎮 **Galad Scott - Version ${{ github.ref_name }}${{ steps.check.outputs.is_unstable == 'true' && ' (pré-version)' || '' }}**
             
             📥 **Téléchargez le jeu pour votre plateforme :**
-            - **Windows** : `galad-islands-windows.zip`
-            - **Linux** : `galad-islands-Linux.zip` 
-            - **macOS** : `galad-islands-macOS.zip`
+            - **Windows** : `galad-scott-windows.zip`
+            - **Linux** : `galad-scott-Linux.zip` 
+            - **macOS** : `galad-scott-macOS.zip`
             
             📦 **Chaque archive contient :**
-            - `galad-islands` : Le jeu principal
-            - `galad-config-tool` : Outil de configuration autonome (Tkinter)
+            - `galad-scott` : Le jeu principal
             
             📖 Consultez le fichier `README.md` inclus dans l'archive pour les instructions d'installation.
             
             🔗 **Liens :**
-            - [Documentation complète](https://fydyr.github.io/Galad-Islands/)
-            - [Changelog (Français)](https://github.com/Fydyr/Galad-Islands/blob/main/CHANGELOG.md)
-            - [Changelog (English)](https://github.com/Fydyr/Galad-Islands/blob/main/CHANGELOG_EN.md)
+            - [Documentation complète](https://ethann59.github.io/Galad-Scott/)
+            - [Changelog (Français)](https://github.com/ethann59/Galad-Scott/blob/main/CHANGELOG.md)
+            - [Changelog (English)](https://github.com/ethann59/Galad-Scott/blob/main/CHANGELOG_EN.md)
           files: |
-            galad-islands-*.zip
+            galad-scott-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

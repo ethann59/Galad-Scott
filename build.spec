@@ -4,13 +4,6 @@ import os
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_all, copy_metadata, collect_dynamic_libs
 import glob
 
-# Collect model files (glob) to avoid path expansion issues across different CI runners
-model_datas = []
-for f in glob.glob('src/models/*.pkl'):
-    model_datas.append((f, 'models'))
-for f in glob.glob('src/ia/models/*.pkl'):
-    model_datas.append((f, 'models'))
-
 # NOTE: Building with a single Analysis (above) may add excluded modules or
 # heavy libs to all executables. To have finer control we create one
 # Analysis per executable. This mirrors the CI flags used in GitHub Actions.
@@ -21,8 +14,7 @@ for f in glob.glob('src/ia/models/*.pkl'):
 analysis_game = Analysis(
     ['main.py'],
     pathex=[os.getcwd()],
-    datas=[('assets', 'assets')] + model_datas,
-    hiddenimports=['sklearn.ensemble._forest'],
+    datas=[('assets', 'assets')],
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
@@ -30,41 +22,6 @@ analysis_game = Analysis(
     win_private_assemblies=False,
     cipher=None,
     noarchive=False
-)
-
-# Config tool: needs locales + src, exclude heavy libs to keep package small
-analysis_config = Analysis(
-    ['tools/galad_config.py'],
-    pathex=[os.getcwd()],
-    datas=[('assets/locales', 'assets/locales'), ('src', 'src')],
-    hiddenimports=[],
-    hookspath=[],
-    runtime_hooks=[],
-    excludes=['esper', 'llvmlite', 'numba', 'numpy', 'Pillow', 'sklearn', 'joblib'],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=None,
-    noarchive=False
-)
-
-# Maraudeur AI Cleaner: similar to config tool
-
-# --- Create PYZ (Python modules archive) ---
-pyz_game = PYZ(analysis_game.pure, analysis_game.zipped_data, cipher=None)
-pyz_config = PYZ(analysis_config.pure, analysis_config.zipped_data, cipher=None)
-# Removed old standalone Maraudeur AI Cleaner (merged into galad-config-tool)
-
-# --- EXE definitions ---
-# Define each executable WITHOUT merging them.
-# They will be created in temporary folders by PyInstaller.
-exe_game = EXE(
-    pyz_game,
-    analysis_game.scripts,
-    [],
-    exclude_binaries=True,
-    name='galad-islands',
-    console=False,  # No console for the game
-    icon='assets/logo.ico'
 )
 
 exe_config_tool = EXE(
@@ -84,10 +41,4 @@ exe_config_tool = EXE(
 # practice for multi-executable applications.
 coll_game = COLLECT(exe_game,
                     analysis_game.binaries, analysis_game.datas,
-                    name='galad-islands')
-
-coll_config = COLLECT(exe_config_tool,
-                      analysis_config.binaries, analysis_config.datas,
-                      name='galad-config-tool')
-
-# Note: MaraudeurAiCleaner has been retired; functionality moved into galad-config-tool
+                    name='galad-scott',)

@@ -1,31 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-Navigation translations for Galad Islands
+Navigation translations for Galad Scott Rail Shooter
 """
 
 TRANSLATIONS = {
-    "gamemode.ai_vs_ai": "AI vs AI (Spectator)",
-    "gamemode.rail_shooter": "Rail Shooter",
-    "gamemode.player_vs_ai": "Player vs AI",
-    "gamemode.select_mode_message": "Select a game mode",
-    "gamemode.select_mode_title": "Game Mode",
-    "menu.close": "Close",
+    # Main menu
+    "menu.play": "Play",
+    "menu.options": "Options",
     "menu.credits": "Credits",
     "menu.help": "Help",
-    "menu.no": "No",
-    "menu.options": "Options",
-    "menu.play": "Play",
-    "menu.quit": "Quit",
-    "menu.replay_cinematic": "Replay Cinematic",
-    "menu.scenario": "Scenario",
     "menu.scores": "Scores",
+    "menu.quit": "Quit",
+    "menu.close": "Close",
     "menu.yes": "Yes",
-    "scores.title": "Scores",
-    "scores.empty": "No scores yet",
-    "options.simple_title": "Options",
-    "options.simple_message": "Fullscreen by default",
-    "team_selection.message": "Select your starting side:",
-    "team_selection.team1": "The Dawn Fleet",
-    "team_selection.team2": "The Abyss Legion",
-    "team_selection.title": "Choose your team",
+    "menu.no": "No",
+    
+    # Scores
+    "scores.title": "High Scores",
+    "scores.empty": "No scores recorded",
+    
+    # Options
+    "options.title": "Options",
+    "options.music": "Music",
+    "options.effects": "Effects",
+    "options.language": "Language",
+    "options.apply": "Apply and close",
+    
+    # Game
+    "game.game_over": "GAME OVER",
+    "game.enter_name": "ENTER YOUR NAME:",
+    "game.score": "Score",
+    "game.health": "Health",
 }

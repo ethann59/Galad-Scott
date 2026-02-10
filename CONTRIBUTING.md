@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing to Galad-Islands. This document describes how to report issues, request features and submit code changes in a clear and efficient way. It is inspired by the project's developer documentation.
+Thank you for your interest in contributing to Galad-Scott. This document describes how to report issues, request features and submit code changes in a clear and efficient way. It is inspired by the project's developer documentation.
 
 ---
 
@@ -31,12 +31,12 @@ Be respectful, inclusive and professional. Harassment, hate speech or abusive be
 1. Fork the repository on GitHub.
 2. Clone your fork:
    ```
-   git clone https://github.com/<your-user>/Galad-Islands.git
+   git clone https://github.com/<your-user>/Galad-Scott.git
    cd Galad-Islands
    ```
 3. Add upstream remote:
    ```
-   git remote add upstream https://github.com/Fydyr/Galad-Islands.git
+   git remote add upstream https://github.com/ethann59/Galad-Scott.git
    git fetch upstream
    ```
 

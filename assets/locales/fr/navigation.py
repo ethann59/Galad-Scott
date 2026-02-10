@@ -1,31 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-Navigation translations for Galad Islands
+Navigation translations for Galad Scott Rail Shooter
 """
 
 TRANSLATIONS = {
-    "gamemode.ai_vs_ai": "IA vs IA (Spectateur)",
-    "gamemode.rail_shooter": "Rail Shooter",
-    "gamemode.player_vs_ai": "Joueur vs IA",
-    "gamemode.select_mode_message": "Sélectionnez un mode de jeu",
-    "gamemode.select_mode_title": "Mode de Jeu",
-    "menu.close": "Fermer",
+    # Menu principal
+    "menu.play": "Jouer",
+    "menu.options": "Options",
     "menu.credits": "Crédits",
     "menu.help": "Aide",
-    "menu.no": "Non",
-    "menu.options": "Options",
-    "menu.play": "Jouer",
-    "menu.quit": "Quitter",
-    "menu.replay_cinematic": "Revoir la cinématique",
-    "menu.scenario": "Scénario",
     "menu.scores": "Scores",
+    "menu.quit": "Quitter",
+    "menu.close": "Fermer",
     "menu.yes": "Oui",
-    "scores.title": "Scores",
-    "scores.empty": "Aucun score pour le moment",
-    "options.simple_title": "Options",
-    "options.simple_message": "Plein ecran par defaut",
-    "team_selection.message": "Sélectionnez votre camp de départ :",
-    "team_selection.team1": "La Flotte de l'Aube",
-    "team_selection.team2": "La Légion des Abysses",
-    "team_selection.title": "Choix de l'équipe",
+    "menu.no": "Non",
+    
+    # Scores
+    "scores.title": "Meilleurs Scores",
+    "scores.empty": "Aucun score enregistré",
+    
+    # Options
+    "options.title": "Options",
+    "options.music": "Musique",
+    "options.effects": "Effets",
+    "options.language": "Langue",
+    "options.apply": "Appliquer et fermer",
+    
+    # Jeu
+    "game.game_over": "GAME OVER",
+    "game.enter_name": "ENTREZ VOTRE NOM:",
+    "game.score": "Score",
+    "game.health": "Vie",
 }
