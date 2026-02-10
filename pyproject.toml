@@ -1,14 +1,10 @@
 [project]
-name = "galad-islands"
-version = "1.1.1"
-description = "Jeu Galad Islands"
+name = "galad-scott"
+version = "0.1.0"
+description = "Galad Scott - Jeu de tir basé sur Galad Islands développé pour la borne d'arcade de l'IUT de Calais"
 authors = [
-    { name="Alluin Edouard", email="edouard.alluin@etu.univ-littoral.fr" },
-    { name="Behani Julien", email="julien.behani@etu.univ-littoral.fr" },
     { name="Cailliau Ethann", email="ethann.cailliau@etu.univ-littoral.fr" },
-    { name="Damman Alexandre", email="alexandre.damman@etu.univ-littoral.fr" },
-    { name="Fournier Enzo", email="enzo.fournier000@etu.univ-littoral.fr" },
-    { name="Lambert Romain", email="romain.lambert@etu.univ-littoral.fr" }
+    { name="Damman Alexandre", email="alexandre.damman@etu.univ-littoral.fr" }
 ]
 
 

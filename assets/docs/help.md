@@ -11,183 +11,73 @@
 
 ### Combat
 
-- **Espace** : Tirer (tir automatique maintenu)
-- **A** : Tirer (alternatif)
+- **Espace** : Tirer
+- **Clic Souris** : Tirer (alternatif)
 
 ### Menu
 
-- **Échap** : Pause / Menu in-game
-- **Entrée** : Valider les choix
+- **Échap** : Quitter le jeu
+- **Entrée/Espace** : Valider les choix dans les menus
 
 ## Objectif
 
-Détruisez tous les ennemis qui apparaissent à l'écran pour marquer des points !
+Survivez le plus longtemps possible en détruisant les vagues d'ennemis qui apparaissent !
 
 ### Types d'Ennemis
 
 #### **Scout** 
 Ennemi rapide qui zigzague sur l'écran. Facile à toucher mais imprévisible.
+- **Points** : 10
+- **Vitesse** : Rapide
+- **Comportement** : Zigzague en tirant
 
 #### **Maraudeur**
-Ennemi qui tire en rafales. Plus dangereux mais plus lent.
+Ennemi qui tire en rafales et suit le joueur. Plus dangereux mais plus lent.
+- **Points** : 10  
+- **Vitesse** : Moyenne
+- **Comportement** : Tire en rafales de 3 projectiles
 
 #### **Kamikaze**
 Ennemi qui fonce directement sur vous ! Éliminez-le rapidement.
+- **Points** : 10
+- **Vitesse** : Variable (accélère près du joueur)
+- **Comportement** : Charge directement vers le joueur
 
-- **Vitesse** : 5/s
-- **Dégâts** : 10-15
-- **Armure** : 60 PV
-- **Portée** : 5 cases
-- **Rechargement** : 1s
-- **Capacité spéciale** : _Manœuvre d'évasion_ - Invincibilité 3s
-- **Stratégie** : Idéal pour la reconnaissance et les frappes rapides. Ne tire que vers l'avant.
+## Gameplay
 
-#### **Maraudeur Moyen** - 20 Gold
+### Système de Score
+- Chaque ennemi détruit rapporte **10 points**
+- Survivez le plus longtemps possible pour un score élevé
+- Entrez votre nom dans le classement après la partie
 
-![Maraudeur allié](/assets/docs/units/ally/Maraudeur.png)
-![Maraudeur ennemi](/assets/docs/units/enemy/Maraudeur.png)
+### Saisie du Nom (Borne d'Arcade)
+Après une partie, utilisez les contrôles suivants pour entrer votre nom :
+- **↑** : Changer la lettre vers le haut (A→B→C...)
+- **↓** : Changer la lettre vers le bas (Z→Y→X...)
+- **→** : Confirmer la lettre et passer à la suivante
+- **←** : Revenir à la lettre précédente
+- **Entrée/Espace** : Valider le nom complet
+- **Backspace** : Effacer la lettre actuelle
 
-- **Vitesse** : 3.5/s
-- **Dégâts** : 20-30 (salve) / 10-15 (boulet)
-- **Armure** : 130 PV
-- **Portée** : 7 cases
-- **Rechargement** : 2s
-- **Capacité spéciale** : _Bouclier de mana_ - Réduit les dégâts de 20-45%
-- **Stratégie** : Équilibré, peut tirer depuis l'avant et les côtés.
+### Vagues d'Ennemis
+- Les ennemis apparaissent par **vagues continues**
+- Maximum **8 ennemis** à l'écran simultanément
+- La difficulté augmente progressivement
+- Différents types d'ennemis avec des comportements uniques
 
-#### **Léviathan Lourd** - 40 Gold
+### Conseils de Survie
+1. **Restez en mouvement** - Les ennemis visent votre position
+2. **Gérez l'espace** - Ne vous coincez pas dans un coin
+3. **Priorités** - Éliminez les Kamikazes en premier
+4. **Cadence de tir** - Tirez en continu, pas de limite de munitions
+5. **Anticipez** - Observez les patterns de mouvement des ennemis
 
-![Léviathan allié](/assets/docs/units/ally/Leviathan.png)
-![Léviathan ennemi](/assets/docs/units/enemy/Leviathan.png)
+## Navigation au Clavier
 
-- **Vitesse** : 2/s (Le plus lent)
-- **Dégâts** : 40-60 (salve) / 15-20 (boulet)
-- **Armure** : 300 PV (Le plus résistant!)
-- **Portée** : 10 cases
-- **Rechargement** : 4.5s
-- **Capacité spéciale** : _Seconde salve_ - Tire immédiatement une 2e salve
-- **Stratégie** : Tank puissant avec 3 canons de chaque côté, parfait pour les assauts frontaux.
-
-### Unités de Support
-
-#### **Druid** - 30 Gold
-
-![Druid allié](/assets/docs/units/ally/Druid.png)
-![Druid ennemi](/assets/docs/units/enemy/Druid.png)
-
-- **Vitesse** : 4/s
-- **Soin** : 20 PV
-- **Armure** : 100 PV
-- **Portée** : 7 cases
-- **Rechargement** : 4s
-- **Capacité spéciale** : _Lierre volant_ - Immobilise un ennemi 5s
-- **Stratégie** : Support essentiel pour maintenir vos troupes en vie.
-
-#### **Architect** - 30 Gold
-
-![Architect allié](/assets/docs/units/ally/Architect.png)
-![Architect ennemie](/assets/docs/units/enemy/Architect.png)
-
-- **Vitesse** : 4/s
-- **Armure** : 100 PV
-- **Capacité spéciale** : _Rechargement automatique_ - Divise par 2 le cooldown des alliés (rayon 8 cases)
-- **Stratégie** : Peut construire des tours sur les îles pour défendre ou soigner.
-
-(pas encore en jeu)
-
-#### **Kamikase** - 30 Gold
-
-![Kamikase allié](/assets/docs/units/ally/Kamikase.png)
-![Kamikase ennemie](/assets/docs/units/enemy/kamikase.png)
-
-- **Vitesse** : 6/s (Le plus rapide!)
-- **Dégâts** : instantané (en une fois)
-- **Armure** : 60 PV
-- **Portée** : 0 case (collision)
-- **Stratégie** : Idéal pour les vaisseaux lourd ou pour les tours
-
-## Structures
-
-### Tour de Défense
-
-![Tour de Défense allié](/assets/sprites/buildings/ally/ally-defence-tower.png)
-![Tour de Défense ennelie](/assets/sprites/buildings/enemy/enemy-heal-tower.png)
-
-- **Dégâts** : 25
-- **Portée** : 8 cases
-- **Rechargement** : 10s
-- **Armure** : 70 PV
-- **Note** : Construite par l'Architect sur les îles
-
-### Tour de Soin
-
-![Tour de Soin allié](/assets/sprites/buildings/ally/ally-heal-tower.png)
-![Tour de Soin ennemie](/assets/sprites/buildings/enemy/enemy-heal-tower.png)
-
-- **Soin** : 10 PV
-- **Portée** : 5 cases
-- **Rechargement** : 10s
-- **Armure** : 70 PV
-- **Note** : Construite par l'Architect sur les îles
-
-## Événements Aléatoires
-
-### Dangers
-
-- **Tempêtes** (5% chance)
-![Tempêtes](/assets/sprites/event/storm.png)
-  - Dégâts : 30 toutes les 3s
-  - Zone : 3 cases de diamètre (1.5 cases de rayon)
-  - Durée : 20s
-
-- **Vague de bandits** (25% chance)
-![Vague de bandits](/assets/sprites/event/pirate_ship.png)
-  - 1-6 navires ennemis
-  - Dégâts : 20
-  - Traverse la carte d'ouest en est
-
-- **Kraken** (10% chance)
-![Kraken](/assets/sprites/event/kraken.png)
-  - Dégâts : 70
-  - 2-6 tentacules
-  - Attaque les îles et détruit tours/ressources
-
-- **Mines volantes**
-![Mines](/assets/sprites/terrain/mine.png)
-  - Dégâts : 40
-  - Placement aléatoire au début de partie
-
-### Bonus
-
-- **Coffres volants** (20% chance)
-![chest](/assets/sprites/event/chest_close.png)
-  - Récompense : 10-20 Gold
-  - 2-5 coffres par événement
-  - Durée : 20s avant disparition
-
-## Conseils Stratégiques
-
-### Début de Partie
-
-1. Commencez avec 2-3 Scout pour explorer rapidement
-2. Sécurisez les îles proches pour les ressources
-3. Placez un Architect sur une île stratégique
-
-### Milieu de Partie
-
-1. Équilibrez votre flotte : scouts, maraudeurs et support
-2. Utilisez les Druids pour maintenir vos unités en vie
-3. Anticipez les événements aléatoires
-
-### Fin de Partie
-
-1. Rassemblez vos forces pour l'assaut final
-2. Les Leviathan sont excellents pour détruire les bases
-3. Gardez des unités en défense de votre base
-
-## Objectif
-
-Détruisez la base ennemie tout en protégeant la vôtre!
+### Menu Principal
+- **↑/↓** ou **W/S** : Naviguer entre les options
+- **Entrée/Espace** : Sélectionner l'option
+- **Échap** : Quitter le jeu
 
 ---
-_Bon vol et que les vents vous soient favorables!_
+_Bon courage, pilote !_
