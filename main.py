@@ -1,11 +1,48 @@
-# Main menu in Pygame
+# Main menu in Pygame avec gestion d'erreur style borne d'arcade
 
 import pygame
 import sys
 import os
 import logging
 import threading
-from src.ui.crash_window import show_crash_popup
+import traceback
+
+# Gestion globale des erreurs pour borne d'arcade
+def setup_global_error_handling():
+    """Configure la gestion d'erreur globale avec écran bleu."""
+    def handle_exception(exc_type, exc_value, exc_traceback):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+            
+        # Erreur critique - écran bleu
+        error_msg = f"{exc_type.__name__}: {str(exc_value)}"
+        
+        try:
+            from src.ui.arcade_error import show_error_screen
+            show_error_screen(
+                message=error_msg,
+                code=f"0x{hash(str(exc_value)) & 0xFFFFFF:08X}",
+                auto_exit=8.0
+            )
+        except Exception:
+            # Fallback si même l'écran d'erreur plante
+            print("=" * 60)
+            print("ERREUR CRITIQUE SYSTÈME")
+            print("=" * 60)
+            print(f"ERREUR: {error_msg}")
+            print(f"CONTEXTE: {exc_traceback}")
+            print("Le jeu va se fermer automatiquement...")
+            print("=" * 60)
+            pygame.time.wait(3000)
+            sys.exit(1)
+    
+    sys.excepthook = handle_exception
+
+# Initialiser la gestion d'erreur dès le début
+setup_global_error_handling()
+
+# Ancien système de crash remplacé par arcade_error
 from src.managers.display import DisplayManager, LayoutManager, get_display_manager
 from src.managers.audio import AudioManager, VolumeWatcher
 from src.menu.state import MenuState
@@ -196,8 +233,22 @@ class MainMenu:
 
 
     def _on_options(self):
-        """Shows the options window."""
-        show_options_window()
+        """Shows the options window with crash protection."""
+        try:
+            show_options_window()
+        except Exception as e:
+            # Si les options plantent, afficher l'écran bleu
+            try:
+                from src.ui.arcade_error import show_error_screen
+                show_error_screen(
+                    message="Erreur dans les options système",
+                    code="0x000OPT99",
+                    auto_exit=5.0
+                )
+            except Exception:
+                # Fallback ultime - message simple
+                print("ERREUR: Les options ne sont pas disponibles")
+                print("Continuez à jouer normalement...")
 
     def _on_credits(self):
         """Shows the credits with option to replay cinematic."""
@@ -526,4 +577,14 @@ if __name__ == "__main__":
     except Exception as e:
         import traceback
         traceback.print_exc()
-        show_crash_popup(e)
+        # Utiliser l'écran bleu au lieu du crash popup
+        try:
+            from src.ui.arcade_error import show_error_screen
+            show_error_screen(
+                message="Erreur critique du système", 
+                code="0x00000000",
+                auto_exit=10.0
+            )
+        except Exception:
+            print(f"ERREUR FATALE: {e}")
+            sys.exit(1)

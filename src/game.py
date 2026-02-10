@@ -20,7 +20,7 @@ from src.constants.team import Team
 from src.components.core.team_enum import Team as TeamEnum
 from src.ui.team_selection_modal import TeamSelectionModal
 from src.managers.tutorial_manager import TutorialManager
-from src.ui.crash_window import show_crash_popup
+# Ancien système de crash remplacé par arcade_error
 
 logger = logging.getLogger(__name__)
 
@@ -2669,4 +2669,15 @@ def game(window=None, bg_original=None, select_sound=None, audio_manager=None, m
         engine.selection_team_filter = selected_team.value
         engine.run()
     except Exception as e:
-        show_crash_popup(e)
+        # Utiliser l'écran bleu au lieu du crash popup
+        try:
+            from src.ui.arcade_error import show_error_screen
+            show_error_screen(
+                message="Erreur dans le moteur de jeu",
+                code="0x00GAME01", 
+                auto_exit=8.0
+            )
+        except Exception:
+            print(f"ERREUR MOTEUR: {e}")
+            import sys
+            sys.exit(1)
