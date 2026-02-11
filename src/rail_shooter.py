@@ -165,11 +165,16 @@ class RailShooterEngine:
             if self._entering_name and event.type == pygame.KEYDOWN and self._game_over_pause <= 0:
                 self._handle_name_input_arcade(event)
                 continue
-            if event.type == pygame.KEYDOWN and controls.matches_action(controls.ACTION_SYSTEM_PAUSE, event):
-                self.running = False
-                return
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            # Combinaison pause: boutons 1+3 (système pause)
+            if event.type == pygame.KEYDOWN:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_1] and keys[pygame.K_3]:
+                    self.running = False
+                    return
+            # Bouton 1 pour tirer (contrôle borne)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_1 and not self._entering_name:
                 self._try_player_fire()
+            # Support clic souris pour test
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._try_player_fire()
 
@@ -210,18 +215,15 @@ class RailShooterEngine:
 
         speed = 260.0
         dx = 0.0
+        # Pas de mouvement vertical pour la borne d'arcade
         dy = 0.0
 
         keys = pygame.key.get_pressed()
-        modifiers_state = pygame.key.get_mods()
 
-        if controls.is_action_active(controls.ACTION_UNIT_MOVE_FORWARD, keys, modifiers_state):
-            dy -= speed * dt
-        if controls.is_action_active(controls.ACTION_UNIT_MOVE_BACKWARD, keys, modifiers_state):
-            dy += speed * dt
-        if controls.is_action_active(controls.ACTION_UNIT_TURN_LEFT, keys, modifiers_state):
-            dx -= speed * dt
-        if controls.is_action_active(controls.ACTION_UNIT_TURN_RIGHT, keys, modifiers_state):
+        # Contrôles borne d'arcade: O=gauche, L=droite
+        if keys[pygame.K_o]:
+            dx = -speed * dt
+        if keys[pygame.K_l]:
             dx += speed * dt
 
         pos = es.component_for_entity(self.player_id, PositionComponent)
@@ -237,7 +239,8 @@ class RailShooterEngine:
         if self.player_fire_cooldown > 0:
             self.player_fire_cooldown -= dt
 
-        if controls.is_action_active(controls.ACTION_UNIT_ATTACK, keys, modifiers_state):
+        # Tir automatique continu pour borne d'arcade - Bouton 1
+        if keys[pygame.K_1]:
             self._try_player_fire()
 
     def _spawn_enemies(self, dt: float) -> None:
@@ -561,11 +564,22 @@ class RailShooterEngine:
         if self._score_saved:
             return
         try:
+            # Sauvegarde au format JSON classique
             from src.utils.score_manager import add_score
-            name = self._name_input.strip() or "Player"
+            name = self._name_input.strip() or "UNK"
             add_score(self.score, name)
-        except Exception:
-            pass
+            
+            # Sauvegarde automatique au format borne d'arcade
+            from src.utils.arcade_score_manager import add_arcade_score, export_to_arcade_format
+            name_arcade = name[:3].upper()  # Limiter à 3 caractères
+            add_arcade_score(name_arcade, self.score)
+            
+            # Export automatique au format borne
+            path = export_to_arcade_format()
+            print(f"📊 Score sauvegardé au format borne: {path}")
+            
+        except Exception as e:
+            print(f"❌ Erreur sauvegarde score: {e}")
         self._score_saved = True
 
     def _start_name_entry(self) -> None:
@@ -580,25 +594,25 @@ class RailShooterEngine:
 
 
     def _handle_name_input_arcade(self, event: pygame.event.Event) -> None:
-        """Interface de saisie style borne d'arcade."""
-        if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-            # Valider le nom
+        \"\"\"Interface de saisie style borne d'arcade - contrôles O,K,L,M + boutons.\"\"\"
+        if event.key == pygame.K_3:
+            # Valider le nom (Bouton 3)
             self._name_confirmed = True
             self._entering_name = False
             self.game_over_timer = 1.5
             self._save_score_once()
             return
             
-        elif event.key in (pygame.K_UP, pygame.K_w):
-            # Changer la lettre vers le haut
+        elif event.key == pygame.K_k:
+            # Changer la lettre vers le haut (K = haut sur borne)
             self._letter_index = (self._letter_index - 1) % len(self._available_chars)
             
-        elif event.key in (pygame.K_DOWN, pygame.K_s):
-            # Changer la lettre vers le bas  
+        elif event.key == pygame.K_m:
+            # Changer la lettre vers le bas (M = bas sur borne)
             self._letter_index = (self._letter_index + 1) % len(self._available_chars)
             
-        elif event.key in (pygame.K_RIGHT, pygame.K_d):
-            # Confirmer la lettre et passer à la suivante
+        elif event.key == pygame.K_l:
+            # Confirmer la lettre et passer à la suivante (L = droite sur borne)
             if self._char_position < len(self._name_input):
                 # Modifier lettre existante
                 name_list = list(self._name_input)
@@ -606,16 +620,16 @@ class RailShooterEngine:
                 self._name_input = ''.join(name_list)
             else:
                 # Ajouter nouvelle lettre
-                if len(self._name_input) < 8:  # Limite à 8 caractères
+                if len(self._name_input) < 3:  # Limité à 3 caractères pour borne
                     self._name_input += self._available_chars[self._letter_index]
             
             # Passer au caractère suivant
-            if self._char_position < 7:  # Max 8 caractères (0-7)
+            if self._char_position < 2:  # Max 3 caractères (0-2)
                 self._char_position += 1
                 self._letter_index = 0  # Reset sur 'A'
                 
-        elif event.key in (pygame.K_LEFT, pygame.K_a):
-            # Revenir au caractère précédent
+        elif event.key == pygame.K_o:
+            # Revenir au caractère précédent (O = gauche sur borne)
             if self._char_position > 0:
                 self._char_position -= 1
                 # Charger la lettre actuelle à cette position
@@ -626,8 +640,8 @@ class RailShooterEngine:
                     except ValueError:
                         self._letter_index = 0
                         
-        elif event.key == pygame.K_BACKSPACE:
-            # Effacer le caractère actuel
+        elif event.key == pygame.K_2:
+            # Effacer le caractère actuel (Bouton 2)
             if self._name_input and self._char_position > 0:
                 self._char_position -= 1
                 self._name_input = self._name_input[:self._char_position] + self._name_input[self._char_position + 1:]
@@ -680,12 +694,12 @@ class RailShooterEngine:
             char_rect = char_surface.get_rect(center=(start_x + i * char_width, center_y))
             self.window.blit(char_surface, char_rect)
         
-        # Instructions
+        # Instructions pour borne d'arcade
         instructions = [
-            "↑↓: Changer lettre",
-            "→: Valider lettre", 
-            "←: Retour",
-            "Entrée: Confirmer nom"
+            "K/M: Changer lettre",
+            "L: Valider lettre", 
+            "O: Retour",
+            "Bouton 3: Confirmer nom"
         ]
         
         y_offset = center_y + 60

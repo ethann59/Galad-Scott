@@ -21,50 +21,43 @@ from src.version import __version__
 CONFIG_FILE = "galad_config.json"
 
 DEFAULT_CONFIG = {
-    "screen_width": 1920,
-    "screen_height": 1080,
-    "window_mode": "windowed",  # "windowed", "fullscreen" -- Par défaut en fenêtré pour le développement
+    "screen_width": 1280,
+    "screen_height": 1024,
+    "window_mode": "fullscreen",  # "windowed", "fullscreen" -- Par défaut en fenêtré pour le développement
     "volume_master": 0.8,
     "volume_music": 0.5,
     "volume_effects": 0.7,
     "vsync": True,
     "performance_mode": "high",  # "auto", "high", "medium", "low"
-    "disable_particles": False,
-    "disable_shadows": False,
-    "disable_ai_learning": True,
     "max_fps": 75,  # Augmenté pour une meilleure expérience
     "show_fps": False,
     "dev_mode": False,  # Mode développement pour les actions debug
     "language": "fr",
-    "check_updates": True,  # Vérification automatique des mises à jour au démarrage
-    "fog_render_mode": "tiles",  # "image" or "tiles"
-    "camera_sensitivity": 1.0,
-    "camera_fast_multiplier": 2.5,
     "key_bindings": {
-        "unit_move_forward": ["z"],
-        "unit_move_backward": ["s"],
-        "unit_turn_left": ["q"],
-        "unit_turn_right": ["d"],
-        "unit_stop": ["lctrl", "rctrl"],
-        "unit_attack": ["a"],
-        "unit_attack_mode": ["tab"],
-        "unit_special": ["e"],
-        "unit_previous": ["1"],
+        "unit_move_forward": ["k"],
+        "unit_move_backward": ["m"],
+        "unit_turn_left": ["o"],
+        "unit_turn_right": ["l"],
+        "unit_stop": ["4"],
+        "unit_attack": ["1"],
+        "unit_attack_mode": ["6"],
+        "unit_special": ["3"],
+        "unit_previous": ["5"],
         "unit_next": ["2"],
-        "build_defense_tower": ["f"],
-        "build_heal_tower": ["g"],
-        "camera_move_left": ["left"],
-        "camera_move_right": ["right"],
-        "camera_move_up": ["up"],
-        "camera_move_down": ["down"],
-        "camera_fast_modifier": ["ctrl"],
-        "camera_follow_toggle": ["c"],
-        "selection_select_all": ["ctrl+a"],
-        "selection_cycle_team": ["t"],
-        "system_pause": ["escape"],
-        "system_help": ["f1"],
-        "system_debug": ["f3"],
-        "system_shop": ["b"]
+        "build_defense_tower": ["5"],
+        "build_heal_tower": ["6"],
+        "camera_move_left": ["o"],
+        "camera_move_right": ["l"],
+        "camera_move_up": ["k"],
+        "camera_move_down": ["m"],
+        "camera_fast_modifier": ["1"],
+        "camera_follow_toggle": ["2"],
+        "selection_select_all": ["1+2"],
+        "selection_cycle_team": ["3"],
+        "system_pause": ["1+3"],
+        "system_help": ["1+4"],
+        "system_debug": ["1+5"],
+        "system_shop": ["4"]
     }
 }
 

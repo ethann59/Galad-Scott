@@ -45,22 +45,6 @@ plugins:
           build: true
           nav:
             - Accueil: index.md
-            - 📖 Documentation Utilisateur:
-              - Introduction & Présentation: user/basics/introduction.md
-              - Configuration & Installation: user/basics/installation.md
-              - Commandes & Interfaces: user/gameplay/controls.md
-              - Gameplay & Progression: user/gameplay/gameplay.md
-              - Description Sprites & Conseils: user/units/units.md
-              - Ressources supplémentaires:
-                - Outil de configuration: user/tools/galad-config-tool.md
-                - Guide de démarrage: user/basics/getting-started.md
-                - Unités : user/units/units.md
-                - Bâtiments: user/economy/buildings.md
-                - Boutique: user/economy/shop.md
-                - Barre d'action: user/gameplay/action-bar.md
-                - Paramètres du jeu: user/basics/settings.md
-                - FAQ: user/help/faq.md
-                - Crédits: user/help/credits.md
             - 🛠️ Documentation Technique:
               - 1. Introduction:
                 - Vue d'ensemble: dev/01-introduction/overview.md

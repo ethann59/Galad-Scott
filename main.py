@@ -4,7 +4,6 @@ import pygame
 import sys
 import os
 import logging
-import threading
 import traceback
 
 # Gestion globale des erreurs pour borne d'arcade
@@ -53,7 +52,7 @@ def setup_global_error_handling():
 setup_global_error_handling()
 
 # Ancien système de crash remplacé par arcade_error
-from src.managers.display import DisplayManager, LayoutManager, get_display_manager
+from src.managers.display import LayoutManager, get_display_manager
 from src.managers.audio import AudioManager, VolumeWatcher
 from src.menu.state import MenuState
 from src.ui.ui_component import Button
@@ -150,18 +149,12 @@ class MainMenu:
         labels = [
             t("menu.play"),
             t("menu.options"),
-            t("menu.credits"),
-            t("menu.help"),
-            t("menu.scores"),
             t("menu.quit")
         ]
 
         callbacks = [
             self._on_play,
             self._on_options,
-            self._on_credits,
-            self._on_help,
-            self._on_scores,
             self._on_quit
         ]
 
@@ -236,61 +229,9 @@ class MainMenu:
                 print("ERREUR: Les options ne sont pas disponibles")
                 print("Continuez à jouer normalement...")
 
-    def _on_credits(self):
-        """Affiche les crédits adaptés à l'arcade."""
-        try:
-            from src.functions.arcade_menus import show_arcade_credits
-            show_arcade_credits()
-        except Exception as e:
-            print(f"Erreur affichage crédits: {e}")
-
-    def _on_help(self):
-        """Affiche l'aide adaptée à l'arcade."""
-        try:
-            from src.functions.arcade_menus import show_arcade_help
-            show_arcade_help()
-        except Exception as e:
-            print(f"Erreur affichage aide: {e}")
-
-    def _on_scores(self):
-        """Affiche le tableau des scores adapté à l'arcade."""
-        try:
-            from src.functions.arcade_menus import show_arcade_scores
-            from src.utils.score_manager import get_score_lines
-            
-            # Récupère les scores
-            try:
-                score_lines = get_score_lines(limit=10)
-            except Exception:
-                score_lines = []
-            
-            show_arcade_scores(score_lines)
-        except Exception as e:
-            print(f"Erreur affichage scores: {e}")
-
     def _on_quit(self):
         """Quits the application."""
         self.state.running = False
-    
-    # ========== Update checking ==========
-    
-    def _check_for_updates_async(self):
-        """Vérifie les mises à jour de manière asynchrone."""
-        def check_updates():
-            update_info = check_for_updates()
-            if update_info:
-                new_version, release_url = update_info
-                current_version = get_project_version()
-                self.update_notification = UpdateNotification(
-                    new_version, 
-                    current_version, 
-                    release_url
-                )
-                # Position will be set during first draw
-                
-        # Lance la vérification dans un thread séparé pour ne pas bloquer le menu
-        thread = threading.Thread(target=check_updates, daemon=True)
-        thread.start()
 
     # ========== Event handling ==========
 
@@ -306,10 +247,6 @@ class MainMenu:
                         continue
                 except Exception:
                     pass
-
-            # Laisse la notification gérer l'événement en premier si elle existe
-            if self.update_notification and self.update_notification.handle_event(event):
-                continue
 
             if event.type == pygame.QUIT:
                 self.state.running = False
@@ -426,12 +363,6 @@ class MainMenu:
 
         # Version and dev mode indicator
         self._render_version_info()
-        
-        # Update notification (dessine par-dessus tout le reste)
-        if self.update_notification:
-            width, height = self.display_manager.get_size()
-            self.update_notification.set_position(width, height)
-            self.update_notification.draw(self.surface)
         
         # Indicateur de navigation clavier
         if self.buttons:

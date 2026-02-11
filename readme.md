@@ -47,7 +47,7 @@ Pour lancer le jeu :
 python main.py
 ```
 
-### Contrôles
+### Contrôles (à mettre à jour pour arcade)
 
 **Déplacement :**
 - `↑/Z` : Monter

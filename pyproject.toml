@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Galad Scott - Jeu de tir basé sur Galad Islands développé pour la borne d'arcade de l'IUT de Calais"
 authors = [
     { name="Cailliau Ethann", email="ethann.cailliau@etu.univ-littoral.fr" },
-    { name="Damman Alexandre", email="alexandre.damman@etu.univ-littoral.fr" }
 ]
 
 
