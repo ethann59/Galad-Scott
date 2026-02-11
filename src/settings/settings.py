@@ -10,7 +10,6 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-from src.settings.resolutions import get_all_resolutions as _get_all
 from src.version import __version__
 
 
@@ -38,37 +37,9 @@ DEFAULT_CONFIG = {
         "unit_move_backward": ["m"],
         "unit_turn_left": ["o"],
         "unit_turn_right": ["l"],
-        "unit_stop": ["4"],
-        "unit_attack": ["1"],
-        "unit_attack_mode": ["6"],
-        "unit_special": ["3"],
-        "unit_previous": ["5"],
-        "unit_next": ["2"],
-        "build_defense_tower": ["5"],
-        "build_heal_tower": ["6"],
-        "camera_move_left": ["o"],
-        "camera_move_right": ["l"],
-        "camera_move_up": ["k"],
-        "camera_move_down": ["m"],
-        "camera_fast_modifier": ["1"],
-        "camera_follow_toggle": ["2"],
-        "selection_select_all": ["1+2"],
-        "selection_cycle_team": ["3"],
-        "system_pause": ["1+3"],
-        "system_help": ["1+4"],
-        "system_debug": ["1+5"],
-        "system_shop": ["4"]
+        "unit_shoot": ["space"],
     }
 }
-
-AVAILABLE_RESOLUTIONS = [
-    (800, 600, "800x600"),
-    (1024, 768, "1024x768"),
-    (1280, 720, "1280x720"),
-    (1366, 768, "1366x768"),
-    (1920, 1080, "1920x1080"),
-    (2560, 1440, "2560x1440"),
-]
 
 
 class ConfigManager:
@@ -152,62 +123,9 @@ class ConfigManager:
         if key in self.config:
             self.config[key] = max(0.0, min(1.0, float(value)))
 
-    def set_camera_sensitivity(self, sensitivity: float) -> None:
-        """Définit la sensibilité de la caméra (0.1 à 5.0)."""
-        self.config["camera_sensitivity"] = max(0.1, min(5.0, float(sensitivity)))
-
-    def get_camera_fast_multiplier(self) -> float:
-        """Retourne le multiplicateur de vitesse lorsque l'accélération caméra est active."""
-        return max(1.0, float(self.config.get("camera_fast_multiplier", 2.5)))
-
-    def set_camera_fast_multiplier(self, multiplier: float) -> None:
-        """Met à jour le multiplicateur de vitesse pour le déplacement rapide de la caméra."""
-        self.config["camera_fast_multiplier"] = max(1.0, float(multiplier))
-
     def get_performance_mode(self) -> str:
         """Retourne le mode de performance actuel."""
         return str(self.config.get("performance_mode", "auto"))
-
-    def get_fog_render_mode(self) -> str:
-        """Retourne le mode de rendu pour le brouillard de guerre ('image' ou 'tiles')."""
-        return str(self.config.get("fog_render_mode", "image"))
-
-    def set_fog_render_mode(self, mode: str) -> None:
-        """Définit le mode de rendu du brouillard de guerre.
-
-        Accepted values: 'image' or 'tiles'
-        """
-        if mode in ["image", "tiles"]:
-            self.config["fog_render_mode"] = mode
-
-    def set_performance_mode(self, mode: str) -> None:
-        """Définit le mode de performance."""
-        if mode in ["auto", "high", "medium", "low"]:
-            self.config["performance_mode"] = mode
-
-    def get_disable_particles(self) -> bool:
-        """Retourne si les particules sont désactivées."""
-        return bool(self.config.get("disable_particles", False))
-
-    def set_disable_particles(self, disabled: bool) -> None:
-        """Active/désactive les particules."""
-        self.config["disable_particles"] = bool(disabled)
-
-    def get_disable_shadows(self) -> bool:
-        """Retourne si les ombres sont désactivées."""
-        return bool(self.config.get("disable_shadows", False))
-
-    def set_disable_shadows(self, disabled: bool) -> None:
-        """Active/désactive les ombres."""
-        self.config["disable_shadows"] = bool(disabled)
-
-    def get_disable_ai_learning(self) -> bool:
-        """Retourne si l'apprentissage IA est désactivé."""
-        return bool(self.config.get("disable_ai_learning", False))
-
-    def set_disable_ai_learning(self, disabled: bool) -> None:
-        """Active/désactive l'apprentissage IA."""
-        self.config["disable_ai_learning"] = bool(disabled)
 
     def get_key_bindings(self) -> Dict[str, List[str]]:
         """Retourne une copie des associations de touches personnalisées."""
@@ -236,103 +154,6 @@ class ConfigManager:
 config_manager = ConfigManager()
 
 
-# =============================================================================
-# CONSTANTES DE JEU
-# =============================================================================
-
-# Paramètres d'affichage
-GAME_TITLE = "Galad Islands"
-FPS = 60
-
-# Dimensions de la carte de jeu
-MAP_WIDTH = 45   # nombre de cases en largeur
-MAP_HEIGHT = 45  # nombre de cases en hauteur
-
-# Paramètres de génération de la carte
-MINE_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.008)        # 0.8% de mines
-GENERIC_ISLAND_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.007)  # 0.7% d'îles
-CLOUD_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.03)       # 3% de nuages
-
-# Paramètres de contrôle de la caméra
-CAMERA_SPEED = 200  # pixels par seconde
-ZOOM_MIN = 0.25
-ZOOM_MAX = 2.5
-ZOOM_SPEED = 0.1
-
-# Contraintes d'affichage pour le calcul adaptatif des tuiles
-MIN_VISIBLE_TILES_WIDTH = 15   # minimum de cases visibles en largeur
-MIN_VISIBLE_TILES_HEIGHT = 10  # minimum de cases visibles en hauteur
-MIN_TILE_SIZE = 16  # taille minimale d'une tuile en pixels
-MAX_TILE_SIZE = 64  # taille maximale d'une tuile en pixels
-
-
-# =============================================================================
-# PROPRIÉTÉS DYNAMIQUES
-# =============================================================================
-
-def get_screen_dimensions() -> Tuple[int, int]:
-    """Retourne les dimensions actuelles de l'écran."""
-    return config_manager.get_resolution()
-
-def get_screen_width() -> int:
-    """Retourne la largeur actuelle de l'écran."""
-    return config_manager.get("screen_width")
-
-def get_screen_height() -> int:
-    """Retourne la hauteur actuelle de l'écran."""
-    return config_manager.get("screen_height")
-
-def calculate_tile_size(screen_width: Optional[int] = None, screen_height: Optional[int] = None) -> int:
-    """
-    Calcule la taille optimale des tuiles selon la résolution d'écran.
-    Assure qu'au moins MIN_VISIBLE_TILES_WIDTH x MIN_VISIBLE_TILES_HEIGHT cases sont visibles.
-    """
-    if screen_width is None or screen_height is None:
-        screen_width, screen_height = get_screen_dimensions()
-    
-    # Calcul basé sur la contrainte la plus restrictive
-    max_tile_width = screen_width // MIN_VISIBLE_TILES_WIDTH
-    max_tile_height = screen_height // MIN_VISIBLE_TILES_HEIGHT
-    
-    # Prendre la plus petite valeur pour garantir la visibilité
-    tile_size = min(max_tile_width, max_tile_height)
-    
-    # Appliquer les limites min/max
-    return max(MIN_TILE_SIZE, min(MAX_TILE_SIZE, tile_size))
-
-def get_tile_size() -> int:
-    """Retourne la taille actuelle des tuiles."""
-    return calculate_tile_size()
-
-
-# =============================================================================
-# FONCTIONS UTILITAIRES
-# =============================================================================
-
-def get_available_resolutions() -> List[Tuple[int, int, str]]:
-    """Retourne la liste des résolutions disponibles.
-
-    Combine les résolutions builtin et les résolutions personnalisées définies
-    par l'utilisateur via `galad_resolutions.json` (géré par
-    `src/settings/resolutions.py`). Retourne une liste de tuples
-    (width, height, label).
-    """
-    try:
-        # Import local helper to avoid circular import at module import time
-
-        combined = []
-        for (w, h) in _get_all():
-            label = f"{w}x{h}"
-            combined.append((w, h, label))
-
-        # Ensure builtin fallbacks exist if helper failed to return anything
-        if not combined:
-            return AVAILABLE_RESOLUTIONS.copy()
-        return combined
-    except Exception:
-        # On any error, fall back to the static list
-        return AVAILABLE_RESOLUTIONS.copy()
-
 def apply_resolution(width: int, height: int) -> bool:
     """
     Applique et sauvegarde une nouvelle résolution.
@@ -347,11 +168,6 @@ def set_window_mode(mode: str) -> bool:
         config_manager.set("window_mode", mode)
         return config_manager.save_config()
     return False
-
-def set_camera_sensitivity(value: float) -> bool:
-    """Met à jour la sensibilité de la caméra et sauvegarde."""
-    config_manager.set_camera_sensitivity(value)
-    return config_manager.save_config()
 
 def set_audio_volume(volume_type: str, value: float) -> bool:
     """Met à jour un volume audio et sauvegarde."""
@@ -368,48 +184,6 @@ def reset_to_defaults() -> bool:
 def get_performance_mode() -> str:
     """Retourne le mode de performance actuel."""
     return config_manager.get_performance_mode()
-
-def set_performance_mode(mode: str) -> bool:
-    """Définit le mode de performance et sauvegarde."""
-    config_manager.set_performance_mode(mode)
-    return config_manager.save_config()
-
-def get_fog_render_mode() -> str:
-    """Retourne le mode de rendu du brouillard (top-level helper)."""
-    return config_manager.get_fog_render_mode()
-
-def set_fog_render_mode(mode: str) -> bool:
-    """Set le mode de rendu du brouillard et sauvegarde la config."""
-    config_manager.set_fog_render_mode(mode)
-    return config_manager.save_config()
-
-def get_disable_particles() -> bool:
-    """Retourne si les particules sont désactivées."""
-    return config_manager.get_disable_particles()
-
-def set_disable_particles(disabled: bool) -> bool:
-    """Active/désactive les particules et sauvegarde."""
-    config_manager.set_disable_particles(disabled)
-    return config_manager.save_config()
-
-def get_disable_shadows() -> bool:
-    """Retourne si les ombres sont désactivées."""
-    return config_manager.get_disable_shadows()
-
-def set_disable_shadows(disabled: bool) -> bool:
-    """Active/désactive les ombres et sauvegarde."""
-    config_manager.set_disable_shadows(disabled)
-    return config_manager.save_config()
-
-def get_disable_ai_learning() -> bool:
-    """Retourne si l'apprentissage IA est désactivé."""
-    return config_manager.get_disable_ai_learning()
-
-def set_disable_ai_learning(disabled: bool) -> bool:
-    """Active/désactive l'apprentissage IA et sauvegarde."""
-    config_manager.set_disable_ai_learning(disabled)
-    return config_manager.save_config()
-
 
 def get_project_version() -> str:
     """
@@ -432,35 +206,3 @@ def is_dev_mode_enabled() -> bool:
         return config_manager.get('dev_mode', False)
     except Exception:
         return False
-
-
-# =============================================================================
-# COMPATIBILITÉ (DEPRECATED)
-# =============================================================================
-
-# Propriétés pour la compatibilité avec l'ancien code
-# À terme, il faudrait migrer to les fonctions get_screen_*() et get_tile_size()
-SCREEN_WIDTH = get_screen_width()
-SCREEN_HEIGHT = get_screen_height()
-TILE_SIZE = get_tile_size()
-
-# Fonctions dépréciées - utiliser les nouvelles fonctions à la place
-def calculate_adaptive_tile_size():
-    """DEPRECATED: Utiliser get_tile_size() à la place."""
-    return get_tile_size()
-
-def calculate_adaptive_tile_size_for_resolution(width, height):
-    """DEPRECATED: Utiliser calculate_tile_size(width, height) à la place."""
-    return calculate_tile_size(width, height)
-
-def get_all_resolutions():
-    """DEPRECATED: Utiliser get_available_resolutions() à la place."""
-    return get_available_resolutions()
-
-def set_music_volume(value: float):
-    """DEPRECATED: Utiliser set_audio_volume('music', value) à la place."""
-    return set_audio_volume("music", value)
-
-def reset_defaults():
-    """DEPRECATED: Utiliser reset_to_defaults() à la place."""
-    return reset_to_defaults()
