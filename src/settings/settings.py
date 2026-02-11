@@ -4,12 +4,9 @@ Centralise la gestion des paramètres utilisateur et des constantes de jeu.
 """
 
 import json
-import math
 import os
-import sys
 from copy import deepcopy
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 from src.version import __version__
 
 
@@ -33,11 +30,11 @@ DEFAULT_CONFIG = {
     "dev_mode": False,  # Mode développement pour les actions debug
     "language": "fr",
     "key_bindings": {
-        "unit_move_forward": ["k"],
-        "unit_move_backward": ["m"],
-        "unit_turn_left": ["o"],
-        "unit_turn_right": ["l"],
-        "unit_shoot": ["space"],
+        "unit_move_forward": ["up"],
+        "unit_move_backward": ["down"],
+        "unit_turn_left": ["left"],
+        "unit_turn_right": ["right"],
+        "unit_shoot": ["a"],
     }
 }
 
