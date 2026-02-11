@@ -364,16 +364,6 @@ class MainMenu:
         # Version and dev mode indicator
         self._render_version_info()
         
-        # Indicateur de navigation clavier
-        if self.buttons:
-            nav_font = pygame.font.Font(None, 24)
-            nav_text = "↑↓ Naviguer | Entrée/Espace: Sélectionner | Échap: Quitter"
-            text_surface = nav_font.render(nav_text, True, (180, 180, 180))
-            text_rect = text_surface.get_rect(
-                center=(self.surface.get_width() // 2, self.surface.get_height() - 25)
-            )
-            self.surface.blit(text_surface, text_rect)
-
         pygame.display.update()
 
 

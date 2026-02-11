@@ -9,6 +9,8 @@ from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 from src.version import __version__
 
+import math
+
 
 # =============================================================================
 # CONFIGURATION UTILISATEUR
@@ -203,3 +205,82 @@ def is_dev_mode_enabled() -> bool:
         return config_manager.get('dev_mode', False)
     except Exception:
         return False
+
+
+# =============================================================================
+# CONSTANTES DE JEU
+# =============================================================================
+
+# Paramètres d'affichage
+GAME_TITLE = "Galad Scott"
+FPS = 60
+
+# Dimensions de la carte de jeu
+MAP_WIDTH = 45   # nombre de cases en largeur
+MAP_HEIGHT = 45  # nombre de cases en hauteur
+
+# Paramètres de génération de la carte
+MINE_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.008)        # 0.8% de mines
+GENERIC_ISLAND_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.007)  # 0.7% d'îles
+CLOUD_RATE = math.ceil(MAP_WIDTH * MAP_HEIGHT * 0.03)       # 3% de nuages
+
+# Paramètres de contrôle de la caméra
+CAMERA_SPEED = 200  # pixels par seconde
+ZOOM_MIN = 0.25
+ZOOM_MAX = 2.5
+ZOOM_SPEED = 0.1
+
+# Contraintes d'affichage pour le calcul adaptatif des tuiles
+MIN_VISIBLE_TILES_WIDTH = 15   # minimum de cases visibles en largeur
+MIN_VISIBLE_TILES_HEIGHT = 10  # minimum de cases visibles en hauteur
+MIN_TILE_SIZE = 16  # taille minimale d'une tuile en pixels
+MAX_TILE_SIZE = 64  # taille maximale d'une tuile en pixels
+
+
+# =============================================================================
+# PROPRIÉTÉS DYNAMIQUES
+# =============================================================================
+
+def get_screen_dimensions() -> Tuple[int, int]:
+    """Retourne les dimensions actuelles de l'écran."""
+    return config_manager.get_resolution()
+
+def get_screen_width() -> int:
+    """Retourne la largeur actuelle de l'écran."""
+    return config_manager.get("screen_width")
+
+def get_screen_height() -> int:
+    """Retourne la hauteur actuelle de l'écran."""
+    return config_manager.get("screen_height")
+
+def calculate_tile_size(screen_width: int = None, screen_height: int = None) -> int:
+    """
+    Calcule la taille optimale des tuiles selon la résolution d'écran.
+    Assure qu'au moins MIN_VISIBLE_TILES_WIDTH x MIN_VISIBLE_TILES_HEIGHT cases sont visibles.
+    """
+    if screen_width is None or screen_height is None:
+        screen_width, screen_height = get_screen_dimensions()
+    
+    # Calcul basé sur la contrainte la plus restrictive
+    max_tile_width = screen_width // MIN_VISIBLE_TILES_WIDTH
+    max_tile_height = screen_height // MIN_VISIBLE_TILES_HEIGHT
+    
+    # Prendre la plus petite valeur pour garantir la visibilité
+    tile_size = min(max_tile_width, max_tile_height)
+    
+    # Appliquer les limites min/max
+    return max(MIN_TILE_SIZE, min(MAX_TILE_SIZE, tile_size))
+
+def get_tile_size() -> int:
+    """Retourne la taille actuelle des tuiles."""
+    return calculate_tile_size()
+
+
+# =============================================================================
+# COMPATIBILITÉ (constantes statiques)
+# =============================================================================
+
+# Propriétés pour la compatibilité avec l'ancien code
+SCREEN_WIDTH = get_screen_width()
+SCREEN_HEIGHT = get_screen_height()
+TILE_SIZE = get_tile_size()
