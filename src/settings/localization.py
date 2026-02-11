@@ -30,8 +30,7 @@ class LocalizationManager:
         try:
             # Mapper les codes de langue to les modules
             language_modules = {
-                "fr": "assets.locales.french", 
-                "en": "assets.locales.english"
+                "fr": "assets.locales.french"
             }
             
             module_name = language_modules.get(self._current_language, "assets.locales.french")
@@ -54,7 +53,7 @@ class LocalizationManager:
     
     def set_language(self, language_code):
         """Change la langue actuelle"""
-        if language_code in ["fr", "en"]:
+        if language_code in ["fr"]:
             self._current_language = language_code
             # Sauvegarder in la config
             config_manager.set("language", language_code)
@@ -80,8 +79,7 @@ class LocalizationManager:
     def get_available_languages(self):
         """Retourne la liste des langues disponibles"""
         return {
-            "fr": "Français",
-            "en": "English"
+            "fr": "Français"
         }
     
     def _load_tool_translations(self, tool_name: str):

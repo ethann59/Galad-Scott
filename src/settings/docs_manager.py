@@ -22,11 +22,8 @@ def get_doc_path(doc_name: str) -> str:
     # Mapping des noms de fichiers
     base_path = "assets/docs"
     
-    if current_lang == "en":
-        filename = f"{doc_name}_en.md"
-    else:
-        # By default français (ou si la langue n'est pas supportée)
-        filename = f"{doc_name}.md"
+    # Par défaut français (seule langue supportée)
+    filename = f"{doc_name}.md"
     
     full_path = get_resource_path(os.path.join(base_path, filename))
     

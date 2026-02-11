@@ -47,23 +47,11 @@ class TestLocalizationManager:
         result = localization_manager.translate("menu.play")
         assert result == "Jouer"
 
-    def test_translate_simple_english(self, localization_manager):
-        """Test traduction simple en anglais."""
-        localization_manager.set_language("en")
-        result = localization_manager.translate("menu.play")
-        assert result == "Play"
-
     def test_translate_with_parameters_french(self, localization_manager):
         """Test traduction avec paramètres en français."""
         localization_manager.set_language("fr")
         result = localization_manager.translate("options.volume_music_label", volume=75)
         assert result == "Volume musique: 75%"
-
-    def test_translate_with_parameters_english(self, localization_manager):
-        """Test traduction avec paramètres en anglais."""
-        localization_manager.set_language("en")
-        result = localization_manager.translate("options.volume_music_label", volume=75)
-        assert result == "Music volume: 75%"
 
     def test_translate_missing_key(self, localization_manager):
         """Test traduction d'une clé manquante."""
@@ -77,15 +65,14 @@ class TestLocalizationManager:
 
     def test_set_language_valid(self, localization_manager):
         """Test changement de langue valide."""
-        assert localization_manager.set_language("en") is True
-        assert localization_manager._current_language == "en"
-
         assert localization_manager.set_language("fr") is True
         assert localization_manager._current_language == "fr"
 
     def test_set_language_invalid(self, localization_manager):
         """Test changement de langue invalide."""
         original_lang = localization_manager._current_language
+        assert localization_manager.set_language("en") is False
+        assert localization_manager._current_language == original_lang
         assert localization_manager.set_language("invalid") is False
         assert localization_manager._current_language == original_lang
 
@@ -106,18 +93,6 @@ class TestModularSystem:
         assert "menu.options" in french_module.TRANSLATIONS
         assert french_module.TRANSLATIONS["menu.play"] == "Jouer"
 
-    def test_modular_english_loading(self):
-        """Test chargement automatique des modules anglais."""
-        english_module = importlib.import_module('assets.locales.en')
-        assert hasattr(english_module, 'TRANSLATIONS')
-        assert isinstance(english_module.TRANSLATIONS, dict)
-        assert len(english_module.TRANSLATIONS) > 0
-
-        # Vérifier quelques clés essentielles
-        assert "menu.play" in english_module.TRANSLATIONS
-        assert "menu.options" in english_module.TRANSLATIONS
-        assert english_module.TRANSLATIONS["menu.play"] == "Play"
-
     def test_category_modules_exist_french(self):
         """Test que tous les modules de catégorie français existent et se chargent."""
         categories = [
@@ -131,37 +106,20 @@ class TestModularSystem:
             assert isinstance(module.TRANSLATIONS, dict)
             assert len(module.TRANSLATIONS) > 0
 
-    def test_category_modules_exist_english(self):
-        """Test que tous les modules de catégorie anglais existent et se chargent."""
-        categories = [
-            'navigation', 'game', 'options', 'shops', 'help', 'actionbar',
-            'units', 'teams', 'debug', 'controls', 'system', 'tutorial', 'gameplay'
-        ]
-
-        for category in categories:
-            module = importlib.import_module(f'assets.locales.en.{category}')
-            assert hasattr(module, 'TRANSLATIONS')
-            assert isinstance(module.TRANSLATIONS, dict)
-            assert len(module.TRANSLATIONS) > 0
-
     def test_modular_system_has_translations(self):
         """Test que le système modulaire contient des traductions."""
         french_modular = importlib.import_module('assets.locales.fr')
-        english_modular = importlib.import_module('assets.locales.en')
 
-        # Compter les clés dans chaque système
+        # Compter les clés dans le système français
         french_keys = set(french_modular.TRANSLATIONS.keys())
-        english_keys = set(english_modular.TRANSLATIONS.keys())
 
-        # Chaque langue devrait avoir des traductions
-        assert len(french_keys) > 100  # Au moins 100 clés en français
-        assert len(english_keys) > 100  # Au moins 100 clés en anglais
+        # Le français devrait avoir des traductions
+        assert len(french_keys) > 50  # Au moins 50 clés en français
 
         # Certaines clés communes devraient exister
         common_keys = ["menu.play", "menu.options", "menu.quit"]
         for key in common_keys:
             assert key in french_keys, f"Missing key '{key}' in French modular"
-            assert key in english_keys, f"Missing key '{key}' in English modular"
 
 
 @pytest.mark.unit
@@ -295,7 +253,3 @@ class TestLocalizationIntegration:
         # Test français (modulaire)
         manager.set_language("fr")
         assert manager.translate("menu.play") == "Jouer"
-
-        # Test anglais (modulaire)
-        manager.set_language("en")
-        assert manager.translate("menu.play") == "Play"

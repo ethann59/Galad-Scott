@@ -6,7 +6,7 @@ import pygame
 import sys
 
 
-def _apply_settings(music_vol: int, effects_vol: int, lang: str) -> None:
+def _apply_settings(music_vol: int, effects_vol: int) -> None:
     """Applique les réglages choisis."""
     try:
         # Conversion des pourcentages en valeurs pygame (0.0 à 1.0)
@@ -21,9 +21,9 @@ def _apply_settings(music_vol: int, effects_vol: int, lang: str) -> None:
             from src.settings.settings import config_manager
             config_manager.set("music_volume", music_level)
             config_manager.set("effects_volume", effects_level)
-            config_manager.set("language", lang.lower())
+            config_manager.set("language", "fr")
             config_manager.save()
-            print(f"✅ Options appliquées: Musique={music_vol}%, Effets={effects_vol}%, Langue={lang}")
+            print(f"✅ Options appliquées: Musique={music_vol}%, Effets={effects_vol}%")
         except Exception:
             print(f"⚠️ Options appliquées temporairement: Musique={music_vol}%, Effets={effects_vol}%")
             
@@ -51,9 +51,8 @@ def show_options_window() -> None:
         # Variables d'état simples
         music_vol = 50  # Pourcentage affiché
         effects_vol = 70
-        lang = "FR"
         selected = 0
-        options_count = 4
+        options_count = 3
         running = True
         
         clock = pygame.time.Clock()
@@ -75,19 +74,15 @@ def show_options_window() -> None:
                             music_vol = max(0, music_vol - 10)
                         elif selected == 1:  # Effets
                             effects_vol = max(0, effects_vol - 10)
-                        elif selected == 2:  # Langue
-                            lang = "EN" if lang == "FR" else "FR"
                     elif event.key in (pygame.K_RIGHT, pygame.K_d):
                         if selected == 0:  # Musique
                             music_vol = min(100, music_vol + 10)
                         elif selected == 1:  # Effets
                             effects_vol = min(100, effects_vol + 10)
-                        elif selected == 2:  # Langue
-                            lang = "EN" if lang == "FR" else "FR"
                     elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                        if selected == 3:  # Appliquer et fermer
+                        if selected == 2:  # Appliquer et fermer
                             # Appliquer les changements
-                            _apply_settings(music_vol, effects_vol, lang)
+                            _apply_settings(music_vol, effects_vol)
                             running = False
             
             # Rendu simple
@@ -104,7 +99,6 @@ def show_options_window() -> None:
             options_text = [
                 f"Musique: {music_vol}%",
                 f"Effets: {effects_vol}%", 
-                f"Langue: {lang}",
                 "Appliquer et fermer"
             ]
             

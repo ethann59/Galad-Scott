@@ -1,10 +1,10 @@
-site_name: Galad Islands - Documentation
-site_description: Documentation complète de Galad Islands - Guide utilisateur et documentation technique
-site_author: Équipe Galad Islands
-site_url: https://fydyr.github.io/Galad-Islands/
+site_name: Galad Scott - Documentation
+site_description: Documentation complète de Galad Scott - Guide utilisateur et documentation technique
+site_author: Équipe Galad Scott
+site_url: https://ethann59.github.io/Galad-Scott/
 
-repo_name: Fydyr/Galad-Islands
-repo_url: https://github.com/Fydyr/Galad-Islands
+repo_name: ethann59/Galad-Scott
+repo_url: https://github.com/ethann59/Galad-Scott
 
 theme:
   name: material
@@ -100,66 +100,6 @@ plugins:
               - 7. Annexes:
                 - Guide de contribution: dev/07-annexes/contributing.md
             - 💬 Support et Contact: support.md
-        - locale: en
-          name: English
-          build: true
-          nav:
-            - Home: index.md
-            - 📖 User Documentation:
-              - Introduction & Overview: user/basics/introduction.md
-              - Setup & Installation: user/basics/installation.md
-              - Controls & Interfaces: user/gameplay/controls.md
-              - Gameplay & Progression: user/gameplay/gameplay.md
-              - Sprites Description & Tips: user/units/units.md
-              - Additional Resources:
-                - Config Tool: user/tools/galad-config-tool.md
-                - Getting Started: user/basics/getting-started.md
-                - Units: user/units/units.md
-                - Buildings: user/economy/buildings.md
-                - Shop: user/economy/shop.md
-                - Action Bar: user/gameplay/action-bar.md
-                - Game Settings: user/basics/settings.md
-                - FAQ: user/help/faq.md
-                - Credits: user/help/credits.md
-            - 🛠️ Technical Documentation:
-              - 1. Introduction:
-                - Overview: dev/01-introduction/overview.md
-              - 2. System Description:
-                - ECS Architecture: dev/02-systeme/architecture.md
-                - Tower System: dev/02-systeme/tower-system-implementation.md
-                - Update System: dev/02-systeme/update-system.md
-                - API:
-                  - Game Engine: dev/02-systeme/api/game-engine.md
-                  - UI System: dev/02-systeme/api/ui-system.md
-                  - Unit System: dev/02-systeme/api/unit-system.md
-                - Modules:
-                  - Components: dev/02-systeme/modules/components.md
-                  - Processors: dev/02-systeme/modules/processors.md
-                  - Managers: dev/02-systeme/modules/managers.md
-                  - Special Abilities: dev/02-systeme/modules/special-capacity-system.md
-                  - Sprite Manager: dev/02-systeme/modules/sprite-manager.md
-                  - Vision System: dev/02-systeme/modules/vision-system.md
-                  - AI System: dev/02-systeme/modules/ai-system.md
-                  - AI Processor Manager: dev/02-systeme/modules/ai-processor-manager.md
-                  - Benchmark Analysis Tool: dev/02-systeme/modules/benchmark-analysis.md
-                  - Rendering Optimizations: dev/02-systeme/rendering_optimizations.md
-              - 3. Installation:
-                - Hardware Requirements: dev/03-installation/requirements.md
-              - 4. Configuration:
-                - Configuration: dev/04-configuration/configuration.md
-                - Galad Config Tool: dev/04-configuration/galad-config-tool-technical.md
-                - Debug Mode: dev/04-configuration/debug-mode.md
-                - Localization: dev/04-configuration/localization.md
-              - 5. Operations:
-                - System Settings: dev/05-exploitation/systeme.md
-                - System Operations: dev/05-exploitation/operations.md
-                - Deployment: dev/05-exploitation/deployment.md
-              - 6. Maintenance:
-                - Maintenance: dev/06-maintenance/maintenance.md
-                - Versioning: dev/06-maintenance/versioning.md
-              - 7. Annexes:
-                - Contribution Guide: dev/07-annexes/contributing.md
-            - 💬 Support and Contact: support.md
 
 markdown_extensions:
   - admonition
@@ -173,4 +113,4 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/Fydyr/Galad-Islands
+      link: https://github.com/ethann59/Galad-Islands
