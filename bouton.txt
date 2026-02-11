@@ -1,1 +1,1 @@
-Déplacement vaisseau:Tir principal:Sélection lettre (Game Over):Valider nom (Game Over):Pause/Quitter:Effacer lettre (Game Over):aucun
+Déplacement vaisseau (←→↑↓):Tir principal:Sélection lettre:Valider nom:Pause/Quitter:Effacer lettre:aucun

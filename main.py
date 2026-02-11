@@ -109,6 +109,8 @@ class MainMenu:
         # Assets
         self.bg_original = self._load_background()
         self.bg_scaled = None
+        self.logo_image = self._load_logo()
+        self.logo_scaled = None
 
         # UI Components
         self.buttons = []
@@ -129,6 +131,15 @@ class MainMenu:
         """Loads the background image."""
         bg_path = get_resource_path(os.path.join("assets", "image", "galad_islands_bg2.png"))
         return pygame.image.load(bg_path)
+
+    def _load_logo(self):
+        """Loads the logo image."""
+        try:
+            logo_path = get_resource_path(os.path.join("assets", "logo.png"))
+            return pygame.image.load(logo_path)
+        except Exception as e:
+            print(f"Erreur chargement logo: {e}")
+            return None
 
     def _initialize_ui(self):
         """Initializes all UI components."""
@@ -183,6 +194,18 @@ class MainMenu:
 
         # Resize background
         self.bg_scaled = pygame.transform.scale(self.bg_original, (width, height))
+
+        # Resize logo (scaling proportionnel avec une taille max)
+        if self.logo_image is not None:
+            max_logo_width = int(width * 0.85)  # 85% de la largeur de l'écran
+            max_logo_height = int(height * 0.6)  # 60% de la hauteur
+            
+            logo_w, logo_h = self.logo_image.get_size()
+            scale = min(max_logo_width / logo_w, max_logo_height / logo_h)
+            new_w = int(logo_w * scale)
+            new_h = int(logo_h * scale)
+            
+            self.logo_scaled = pygame.transform.smoothscale(self.logo_image, (new_w, new_h))
 
         self.state.clear_layout_dirty()
 
@@ -344,7 +367,12 @@ class MainMenu:
 
         # Background
         self.surface.blit(self.bg_scaled, (0, 0))
-
+        # Logo en haut au centre
+        if self.logo_scaled is not None:
+            width, height = self.display_manager.get_size()
+            logo_rect = self.logo_scaled.get_rect(center=(width // 2, height // 5))
+            self.surface.blit(self.logo_scaled, logo_rect)
+            
         # Particles disabled
 
         # Buttons avec surbrillance pour navigation clavier

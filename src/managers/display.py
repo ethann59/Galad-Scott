@@ -189,12 +189,13 @@ class LayoutManager:
         btn_w = max(int(screen_width * 0.12), min(int(screen_width * 0.28), 520))
         btn_h = max(int(screen_height * 0.06), min(int(screen_height * 0.12), 150))
         btn_gap = max(int(screen_height * 0.01), int(screen_height * 0.02))
-        btn_x = int(screen_width * 0.62)
+        # Center horizontally (place buttons near the bottom center)
+        btn_x = (screen_width - btn_w) // 2
 
-        # Vertical centering
+        # Position approx centre-bas (centered around 75% of screen height)
         total_height = num_buttons * btn_h + (num_buttons - 1) * btn_gap
-        available_height = screen_height * 0.8
-        start_y = int(screen_height * 0.1 + (available_height - total_height) / 2)
+        center_bas_y = int(screen_height * 0.75)
+        start_y = max(int(screen_height * 0.05), center_bas_y - total_height // 2)
 
         # Font size
         font_size = max(12, int(btn_h * 0.45))

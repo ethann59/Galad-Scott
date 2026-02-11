@@ -214,16 +214,19 @@ class RailShooterEngine:
 
         speed = 260.0
         dx = 0.0
-        # Pas de mouvement vertical pour la borne d'arcade
         dy = 0.0
 
         keys = pygame.key.get_pressed()
 
-        # Contrôles borne d'arcade: ←→
+        # Contrôles borne d'arcade: ←→↑↓
         if keys[pygame.K_LEFT]:
             dx = -speed * dt
         if keys[pygame.K_RIGHT]:
             dx += speed * dt
+        if keys[pygame.K_UP]:
+            dy = -speed * dt
+        if keys[pygame.K_DOWN]:
+            dy += speed * dt
 
         pos = es.component_for_entity(self.player_id, PositionComponent)
         pos.x += dx
