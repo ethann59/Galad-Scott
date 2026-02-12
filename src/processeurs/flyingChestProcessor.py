@@ -1,4 +1,5 @@
-"""Manager dedicated to flying chests."""
+"""Manager dedicated to flying chests.
+A désactiver pour le moment, car les chests ne sont pas encore implémentés dans le jeu. --- IGNORE ---"""
 
 from __future__ import annotations
 
@@ -23,7 +24,6 @@ from src.constants.gameplay import (
 )
 from src.constants.map_tiles import TileType
 from src.constants.team import Team
-from src.components.core.playerComponent import PlayerComponent
 from src.components.core.teamComponent import TeamComponent
 from src.components.core.team_enum import Team as TeamEnum
 from src.managers.sprite_manager import SpriteID, sprite_manager
@@ -41,28 +41,6 @@ class FlyingChestProcessor(esper.Processor):
     def configure_seed(self, seed: Optional[int]) -> None:
         """Defines the seed used for pseudo-random generation."""
         self._rng = np.random.default_rng(seed)
-
-    def _get_player_component(self, is_enemy: bool = False) -> Optional[PlayerComponent]:
-        """Retrieves the PlayerComponent of the specified player."""
-        team_id = TeamEnum.ENEMY.value if is_enemy else TeamEnum.ALLY.value
-
-        for entity, (player_comp, team_comp) in esper.get_components(PlayerComponent, TeamComponent):
-            if team_comp.team_id == team_id:
-                return player_comp
-
-        # If not found, create the player entity
-        from src.constants.gameplay import PLAYER_DEFAULT_GOLD
-        entity = esper.create_entity()
-        player_comp = PlayerComponent(stored_gold=PLAYER_DEFAULT_GOLD)
-        esper.add_component(entity, player_comp)
-        esper.add_component(entity, TeamComponent(team_id))
-        return player_comp
-
-    def _add_player_gold(self, amount: int, is_enemy: bool = False) -> None:
-        """Adds gold to the specified player."""
-        player_comp = self._get_player_component(is_enemy)
-        if player_comp:
-            player_comp.add_gold(amount)
 
     def reset(self) -> None:
         """Resets the internal timers of the manager."""
@@ -114,7 +92,6 @@ class FlyingChestProcessor(esper.Processor):
 
         if team_component is not None and chest.gold_amount > 0:
             amount = chest.gold_amount
-            self._add_player_gold(amount, is_enemy=gold_receiver_is_enemy)
             # Notify the system that gold has been collected (tutorial hook)
             try:
                 pygame.event.post(pygame.event.Event(pygame.USEREVENT, {"user_type": "resource_collected", "amount": amount, "is_enemy": gold_receiver_is_enemy}))

@@ -132,11 +132,6 @@ class BanditsProcessor:
             if esper.has_component(target_ent, Bandits):
                 continue
 
-            # Don't attack bases
-            from src.components.core.baseComponent import BaseComponent
-            if esper.has_component(target_ent, BaseComponent):
-                continue
-
             # Check that the target has a team (so it's a playable unit)
             if not esper.has_component(target_ent, Team):
                 continue

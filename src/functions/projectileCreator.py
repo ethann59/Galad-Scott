@@ -8,15 +8,10 @@ from src.components.core.canCollideComponent import CanCollideComponent
 from src.components.core.teamComponent import TeamComponent 
 from src.components.core.spriteComponent import SpriteComponent 
 from src.components.core.projectileComponent import ProjectileComponent
-from src.components.special.VineComponent import VineComponent
 from src.components.core.lifetimeComponent import LifetimeComponent
-from src.components.special.speArchitectComponent import SpeArchitect
-from src.components.special.speDruidComponent import SpeDruid
-from src.components.special.speLeviathanComponent import SpeLeviathan
 from src.constants.gameplay import (
     PROJECTILE_SPEED, PROJECTILE_DAMAGE, PROJECTILE_HEALTH,
-    PROJECTILE_WIDTH, PROJECTILE_HEIGHT, DRUID_IMMOBILIZATION_DURATION,
-    DRUID_PROJECTILE_SPEED
+    PROJECTILE_WIDTH, PROJECTILE_HEIGHT
 )
 from src.managers.sprite_manager import SpriteID, sprite_manager
 from src.managers.audio import get_audio_manager
@@ -40,8 +35,8 @@ def create_projectile(entity, type: str = "bullet"):
     audio_manager = get_audio_manager()
     if audio_manager:
         audio_manager.play_shoot_sound()
-
-    if not esper.has_component(entity, SpeArchitect) and not esper.has_component(entity, SpeDruid):
+        
+    if type in ("bullet", "leviathan"):
         # Récupère le radius pour savoir si on tire sur les côtés
         if type == "bullet":
             angles = []
@@ -125,26 +120,6 @@ def create_projectile(entity, type: str = "bullet"):
                     sprite_id = SpriteID.PROJECTILE_BULLET
                 size = sprite_manager.get_default_size(sprite_id)
 
-            elif type == "vine":
-                esper.add_component(bullet_entity, VelocityComponent(
-                    currentSpeed=DRUID_PROJECTILE_SPEED,
-                    maxUpSpeed=DRUID_PROJECTILE_SPEED,
-                ))
-
-                esper.add_component(bullet_entity, LifetimeComponent(1.1))
-                
-                # VineComponent.time is declared as int; cast the duration to int to match
-                esper.add_component(bullet_entity, VineComponent(int(DRUID_IMMOBILIZATION_DURATION)))
-
-                # Identifier cette entity comme un projectile
-                esper.add_component(bullet_entity, ProjectileComponent("vine", entity))
-                
-
-                # Utiliser le SpriteManager pour les projectiles (balle)
-                sprite_id = SpriteID.PROJECTILE_VINE
-                size = sprite_manager.get_default_size(sprite_id)
-            
-
             if size:
                 width, height = size
                 esper.add_component(bullet_entity, sprite_manager.create_sprite_component(sprite_id, width, height))
@@ -155,22 +130,3 @@ def create_projectile(entity, type: str = "bullet"):
                     PROJECTILE_WIDTH,
                     PROJECTILE_HEIGHT
                 ))
-        
-    elif esper.has_component(entity, SpeDruid):
-        current_healing_target = None
-
-        for target_ent, (target_pos, target_health, target_team) in esper.get_components(PositionComponent, HealthComponent, TeamComponent):
-            if target_team.team_id == team_id and target_ent != entity:
-                if target_health.currentHealth < target_health.maxHealth:
-                    if abs(target_pos.x - pos.x) <= druidMaxX and abs(target_pos.y - pos.y) <= druidMaxY:
-                        if current_healing_target is None:
-                            current_healing_target = target_health
-                        elif current_healing_target.currentHealth < target_health.maxHealth:
-                            current_healing_target = target_health
-
-        if current_healing_target is not None:
-            print(current_healing_target.currentHealth)
-            if (target_health.currentHealth + 20) > target_health.maxHealth:
-                current_healing_target.currentHealth = current_healing_target.maxHealth
-            else:
-                current_healing_target.currentHealth += 20

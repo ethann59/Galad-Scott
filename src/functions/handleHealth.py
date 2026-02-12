@@ -1,19 +1,12 @@
 import esper
 from src.components.core.healthComponent import HealthComponent as Health
 from src.components.core.attackComponent import AttackComponent as Attack
-from src.components.core.baseComponent import BaseComponent
 from src.components.core.teamComponent import TeamComponent, TeamComponent as Team
-from src.components.special.speMaraudeurComponent import SpeMaraudeur
 from src.components.special.speScoutComponent import SpeScout
 from src.components.core.attackComponent import AttackComponent as Attack
-from src.components.core.classeComponent import ClasseComponent
-from src.processeurs.combatRewardProcessor import CombatRewardProcessor
 from src.components.events.banditsComponent import Bandits
 from src.components.core.projectileComponent import ProjectileComponent
 
-
-# Global instance of the combat reward processor
-_combat_reward_processor = CombatRewardProcessor()
 
 
 def processHealth(entity, damage, attacker_entity=None):
@@ -33,14 +26,6 @@ def processHealth(entity, damage, attacker_entity=None):
         return  # Pas de component Health, rien à faire
     health = esper.component_for_entity(entity, Health)
     
-    # Check sil'entity possède le bouclier de Barhamus
-    if esper.has_component(entity, SpeMaraudeur):
-        shield = esper.component_for_entity(entity, SpeMaraudeur)
-        try:
-            damage = shield.apply_damage_reduction(damage)
-        except Exception:
-            # in case of error interne au bouclier, ne pas bloquer l'application des dégâts
-            pass
     # Check sil'entity possède l'invincibilité du Zasper
     if esper.has_component(entity, SpeScout):
         invincibility = esper.component_for_entity(entity, SpeScout)
@@ -80,22 +65,9 @@ def processHealth(entity, damage, attacker_entity=None):
     # Delete entity si elle est morte
     try:
         if health.currentHealth <= 0:
-            # Check sic'est une base qui meurt
-            if esper.has_component(entity, BaseComponent):
-                # Déterminer quelle équipe a perdu
-                team_id = 1  # By default équipe alliée
-                if esper.has_component(entity, TeamComponent):
-                    team_comp = esper.component_for_entity(entity, TeamComponent)
-                    team_id = team_comp.team_id
-                
-                # Dispatcher l'événement de fin de partie before de Delete entity
-                esper.dispatch_event('game_over', team_id)
-            
-            # Si c'est une unit tuée par quelqu'un, donner une récompense
-            elif esper.has_component(entity, ClasseComponent) and attacker_entity is not None:
-                _combat_reward_processor.create_unit_reward(entity, attacker_entity)
             
             esper.delete_entity(entity)
+            
     except Exception:
         pass
 

@@ -10,7 +10,6 @@ from src.components.core.canCollideComponent import CanCollideComponent
 from src.components.core.spriteComponent import SpriteComponent
 from src.components.core.projectileComponent import ProjectileComponent
 from src.components.core.lifetimeComponent import LifetimeComponent
-from src.components.core.baseComponent import BaseComponent
 from src.managers.sprite_manager import SpriteID, sprite_manager
 from src.constants.gameplay import PROJECTILE_SPEED, PROJECTILE_WIDTH, PROJECTILE_HEIGHT
 
@@ -41,9 +40,6 @@ class TowerProcessor(esper.Processor):
                 
                 # Si la tour ne peut pas attaquer les bâtiments, on ignore les bases et les autres tours
                 if not tower.can_attack_buildings:
-                    # NE PAS cibler les bases (elles ont BaseComponent)
-                    if esper.has_component(e2, BaseComponent):
-                        continue
                     # NE PAS cibler d'autres tours
                     if esper.has_component(e2, TowerComponent):
                         continue

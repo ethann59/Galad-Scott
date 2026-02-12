@@ -4,8 +4,6 @@ Provides helpers to return cached scaled versions of surfaces or solid-color ove
 """
 from typing import Tuple, Dict
 import pygame
-import random
-import math
 
 # Keys: (id(surface), width, height) -> surface
 _scaled_cache: Dict[Tuple[int, int, int], pygame.Surface] = {}

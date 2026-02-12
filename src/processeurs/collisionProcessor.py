@@ -10,15 +10,12 @@ from src.components.core.velocityComponent import VelocityComponent as Velocity
 from src.components.core.teamComponent import TeamComponent as Team
 from src.components.core.healthComponent import HealthComponent as Health
 from src.components.core.attackComponent import AttackComponent as Attack
-from src.components.special.VineComponent import VineComponent as Vine
 from src.components.special.isVinedComponent import isVinedComponent as IsVined
-from src.constants.map_tiles import TileType
 from src.settings.settings import TILE_SIZE
 from src.components.core.lifetimeComponent import LifetimeComponent
 from src.components.core.projectileComponent import ProjectileComponent
 from src.components.core.radiusComponent import RadiusComponent
 from src.components.special.speScoutComponent import SpeScout
-from src.components.special.speMaraudeurComponent import SpeMaraudeur
 from src.components.special.speKamikazeComponent import SpeKamikazeComponent
 from src.managers.sprite_manager import SpriteID, sprite_manager
 from src.components.events.flyChestComponent import FlyingChestComponent
@@ -26,7 +23,6 @@ from src.components.events.islandResourceComponent import IslandResourceComponen
 from src.components.core.towerComponent import TowerComponent
 from src.functions.handleHealth import processHealth
 from src.components.events.banditsComponent import Bandits
-from src.components.core.velocityComponent import VelocityComponent as VelocityComp
 
 class CollisionProcessor(esper.Processor):
     def __init__(self, graph=None):
@@ -242,19 +238,6 @@ class CollisionProcessor(esper.Processor):
                 # Bandits are invulnerable, ignore collision
                 return
 
-            # Check if projectile comes from a bandit and if target is a base
-            from src.components.core.baseComponent import BaseComponent
-            is_base_target = esper.has_component(target_entity, BaseComponent)
-            projectile_comp = esper.component_for_entity(projectile_entity, ProjectileComponent)
-            is_bandit_projectile = (projectile_comp.owner_entity is not None and
-                                   esper.entity_exists(projectile_comp.owner_entity) and
-                                   esper.has_component(projectile_comp.owner_entity, Bandits))
-
-            # Bandit projectiles don't damage bases
-            if is_base_target and is_bandit_projectile:
-                # Ignore collision (no damage to bases)
-                return
-
             # Non-mine and non-bandit target: apply damage if possible
             if esper.has_component(projectile_entity, Attack) and esper.has_component(target_entity, Health):
                 attack_comp = esper.component_for_entity(projectile_entity, Attack)
@@ -353,13 +336,6 @@ class CollisionProcessor(esper.Processor):
                 bandit_entity = entity2
                 victim_entity = entity1
 
-            # Check if victim is a base - bandits don't damage bases
-            from src.components.core.baseComponent import BaseComponent
-            is_base_victim = esper.has_component(victim_entity, BaseComponent)
-            if is_base_victim:
-                # Bandits don't damage bases, ignore collision
-                return
-
             # Apply damage only to victim (not to bandit)
             if esper.has_component(bandit_entity, Attack) and esper.has_component(victim_entity, Health):
                 attack_comp = esper.component_for_entity(bandit_entity, Attack)
@@ -370,12 +346,10 @@ class CollisionProcessor(esper.Processor):
         attack1 = esper.component_for_entity(entity1, Attack) if esper.has_component(entity1, Attack) else None
         health1 = esper.component_for_entity(entity1, Health) if esper.has_component(entity1, Health) else None
         velo1 = esper.component_for_entity(entity1, Velocity) if esper.has_component(entity1, Velocity) else None
-        vine1 = esper.component_for_entity(entity1, Vine) if esper.has_component(entity1, Vine) else None
 
         attack2 = esper.component_for_entity(entity2, Attack) if esper.has_component(entity2, Attack) else None
         health2 = esper.component_for_entity(entity2, Health) if esper.has_component(entity2, Health) else None
         velo2 = (esper.component_for_entity(entity2, Velocity) if esper.has_component(entity2, Velocity) else None)
-        vine2 = esper.component_for_entity(entity2, Vine) if esper.has_component(entity2, Vine) else None
 
         # Delegate damage logic to central handler `entities_hit` which
         # correctly applies special abilities (invincibility, shield, ...)
@@ -387,23 +361,17 @@ class CollisionProcessor(esper.Processor):
             had_proj1 = False
             had_proj2 = False
 
-        # Save positions if necessary (for explosion if projectile dies)
-        if vine1 is not None and velo2 is not None and not had_proj2:
-            esper.add_component(entity2, IsVined(vine1.time))
-        elif vine2 is not None and velo1 is not None and not had_proj1:
-            esper.add_component(entity1, IsVined(vine2.time))
-        else:
-            pos1 = None
-            pos2 = None
-            try:
-                if esper.has_component(entity1, Position):
-                    p = esper.component_for_entity(entity1, Position)
-                    pos1 = (p.x, p.y)
-                if esper.has_component(entity2, Position):
-                    p2 = esper.component_for_entity(entity2, Position)
-                    pos2 = (p2.x, p2.y)
-            except Exception:
-                pass
+        pos1 = None
+        pos2 = None
+        try:
+            if esper.has_component(entity1, Position):
+                p = esper.component_for_entity(entity1, Position)
+                pos1 = (p.x, p.y)
+            if esper.has_component(entity2, Position):
+                p2 = esper.component_for_entity(entity2, Position)
+                pos2 = (p2.x, p2.y)
+        except Exception:
+            pass
 
         # Dispatch event that will apply damage correctly
         try:
@@ -432,21 +400,12 @@ class CollisionProcessor(esper.Processor):
         # If a mine hits another entity (e.g. a ship), it explodes and disappears
         if is_mine1:
             self._create_explosion_at_entity(entity1)
-            self._destroy_mine_on_grid_with_position(pos1)
             esper.delete_entity(entity1)
 
         if is_mine2:
             self._create_explosion_at_entity(entity2)
-            self._destroy_mine_on_grid_with_position(pos2)
             esper.delete_entity(entity2)
 
-
-        # After dispatch, check if entities were deleted and act accordingly
-        # Mine handling - use saved positions because entity may be deleted
-        if is_mine1 and not esper.entity_exists(entity1):
-            self._destroy_mine_on_grid_with_position(pos1)
-        if is_mine2 and not esper.entity_exists(entity2):
-            self._destroy_mine_on_grid_with_position(pos2)
 
         # Explosion handling for deleted projectiles
         try:
@@ -462,8 +421,6 @@ class CollisionProcessor(esper.Processor):
     def _create_explosion_at_entity(self, entity):
         """Create an explosion at the given entity's position (projectile)"""
         # Use imports at top of file: SpriteID, sprite_manager, Position, Sprite
-        if not esper.has_component(entity, Position) or esper.has_component(entity, Vine):
-            return
         pos = esper.component_for_entity(entity, Position)
         # Choose sprite: impact explosion if it's a projectile, otherwise generic explosion
         is_proj = esper.has_component(entity, ProjectileComponent)
@@ -495,46 +452,6 @@ class CollisionProcessor(esper.Processor):
         esper.add_component(explosion_entity, sprite_manager.create_sprite_component(sprite_id, width, height))
         esper.add_component(explosion_entity, LifetimeComponent(duration))
 
-    def _destroy_mine_on_grid(self, entity):
-        """Destroys mine on grid if entity is a mine"""
-        if not self.graph:
-            return
-
-        # Check if it's a mine (max health = 1)
-        if esper.has_component(entity, Health):
-            health = esper.component_for_entity(entity, Health)
-            if health.maxHealth == 1:  # It's a mine
-                # Get position
-                if esper.has_component(entity, Position):
-                    pos = esper.component_for_entity(entity, Position)
-                    grid_x = int(pos.x // TILE_SIZE)
-                    grid_y = int(pos.y // TILE_SIZE)
-
-                    # Check bounds and destroy on grid
-                    if (0 <= grid_y < len(self.graph) and
-                        0 <= grid_x < len(self.graph[0]) and
-                        self.graph[grid_y][grid_x] == TileType.MINE):
-                        self.graph[grid_y][grid_x] = int(TileType.SEA)  # Replace with water
-
-                        # Dispatch explosion event
-                        esper.dispatch_event('mine_explosion', pos.x, pos.y)
-
-    def _destroy_mine_on_grid_with_position(self, position):
-        """Destroys mine on grid using a saved position"""
-        if not self.graph or position is None:
-            return
-
-        x, y = position
-        grid_x = int(x // TILE_SIZE)
-        grid_y = int(y // TILE_SIZE)
-
-        # Check bounds and destroy on grid if it's a mine
-        if (0 <= grid_y < len(self.graph) and
-            0 <= grid_x < len(self.graph[0]) and
-            self.graph[grid_y][grid_x] == TileType.MINE):
-            self.graph[grid_y][grid_x] = int(TileType.SEA)  # Replace with water
-            # Dispatch explosion event
-            esper.dispatch_event('mine_explosion', x, y)
 
     def _process_terrain_collisions(self):
         """Handles terrain collisions - before movement"""
@@ -577,50 +494,7 @@ class CollisionProcessor(esper.Processor):
                 velocity.terrain_modifier = 1.0
                 continue
 
-            # Get destination terrain type
-            future_terrain = self._get_terrain_type_from_grid(future_grid_x, future_grid_y)
 
-            # Apply effects based on destination terrain
-            self._apply_terrain_effects(ent, pos, velocity, future_terrain)
-
-    def _get_terrain_type_from_grid(self, grid_x, grid_y):
-        """Gets terrain type from grid coordinates"""
-        # If grid is not provided, consider as water
-        if not self.graph:
-            return 'water'
-
-        if (grid_x < 0 or grid_x >= len(self.graph[0]) or
-            grid_y < 0 or grid_y >= len(self.graph)):
-            return 'water'
-
-        terrain_value = self.graph[grid_y][grid_x]
-        return self._get_terrain_type(terrain_value)
-
-    def _get_terrain_type(self, terrain_value):
-        """Converts numeric terrain value to terrain type according to your system"""
-        # According to your mapComponent.py:
-        # 0 = sea (water)
-        # 1 = cloud
-        # 2 = generic island
-        # 3 = mine
-        # 4 = allied base
-        # 5 = enemy base
-
-        if terrain_value == TileType.SEA:
-            return 'water'
-        elif terrain_value == TileType.CLOUD:
-            return 'cloud'
-        elif terrain_value == TileType.GENERIC_ISLAND:
-            return 'island'
-        elif terrain_value == TileType.MINE:
-            return 'mine'
-        elif terrain_value == TileType.ALLY_BASE:
-            return 'ally_base'
-        elif terrain_value == TileType.ENEMY_BASE:
-            return 'enemy_base'
-        else:
-            # Unknown value, treat as water
-            return 'water'
 
     def _apply_terrain_effects(self, entity, pos, velocity, terrain_type):
         # ProjectileComponent imported at top of file
