@@ -1,104 +1,44 @@
 ---
 i18n:
-  en: "📚 Documentation Technique - Galad Islands"
-  fr: "📚 Documentation Technique - Galad Islands"
+  en: "Technical Overview"
+  fr: "Documentation technique"
 ---
 
-# 📚 Galad Islands — Introduction technique
+# Documentation technique
 
-Cette page est l'introduction technique du projet Galad Islands. Elle vise les développeurs, contributeurs et mainteneurs qui ont besoin d'une vue synthétique et pratique du code, de l'architecture et du démarrage.
+Galad Scott est un jeu Python base sur Pygame, avec une architecture ECS (via `esper`). Le mode principal actuel est un rail shooter.
 
-## Objectifs
-
-- Présenter les objectifs du projet et l'architecture générale
-- Fournir un guide de démarrage rapide pour développer localement
-- Pointer vers la documentation détaillée (API, systèmes, outils)
-
-## Vue d'ensemble
-
-Galad Islands est un petit jeu de stratégie/temps réel développé en Python. La base de code utilise une architecture Entity-Component-System (ECS) via la bibliothèque `esper` pour séparer les données et la logique. Le rendu et l'entrée sont pris en charge par `pygame`.
-
-Principaux sous-systèmes
-
-- Moteur de jeu : boucle principale, orchestration et cycle de vie
-- ECS : composants (données) et systèmes/processors (logique)
-- Interface utilisateur : barre d'action, boutique, UI de debug
-- Gestionnaires : audio, sprites, événements, configuration
-- Outils : utilitaires et éditeur de configuration (`tools/galad_config.py`)
-
-## Démarrage rapide (développeur)
-
-1. Cloner le dépôt :
-
-```bash
-git clone https://github.com/Fydyr/Galad-Islands.git
-cd Galad-Islands
-```
-
-1. Créer et activer un environnement virtuel (Linux/macOS) :
+## Demarrage rapide
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-```
-
-1. Installer les dépendances :
-
-```bash
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
-```
-
-1. Lancer le jeu :
-
-```bash
 python main.py
 ```
 
-## Outils de développement
+## Points d'entree
 
-### 📊 Profilage des performances
+- Menu principal : [main.py](https://github.com/ethann59/Galad-Scott/blob/main/main.py)
+- Moteur rail shooter : [src/rail_shooter.py](https://github.com/ethann59/Galad-Scott/blob/main/src/rail_shooter.py)
 
-Pour analyser les performances du jeu, utilisez l'outil de profilage intégré :
+## Structure du projet
+
+```
+src/
+  components/    # Composants ECS
+  processeurs/   # Processeurs ECS
+  managers/      # Services transverses (audio, affichage, sprites)
+  factory/       # Creation d'entites
+  ui/            # Composants UI
+  menu/          # Etat et logique du menu
+docs/            # Documentation
+assets/          # Images, sons, locales
+```
+
+## Tests
 
 ```bash
-python benchmark.py --full-game-only --profile --export-csv
+python -m pytest tests/
 ```
-
-Cet outil utilise un système de profilage intégré pour analyser les performances de chaque système du jeu en temps réel. Pour plus de détails, consultez la [section benchmark de la maintenance](../06-maintenance/maintenance.md#système-de-benchmark-et-profilage-des-performances).
-
-### 🔧 Outils disponibles
-
-- **Galad Config Tool** : Éditeur graphique de configuration (`python tools/galad_config.py`)
-- **Mode debug** : Interface de debug en jeu (accessible via le menu paramètres)
-- **Tests unitaires** : `python -m pytest tests/`
-
-## Structure du projet (dossiers importants)
-
-```text
-src/                  # Code source du jeu
-  components/         # Composants ECS
-  systems/            # Systems modernes
-  Processors/         # Processors legacys (esper)
-  ui/                 # Widgets et écrans UI
-  managers/           # Gestionnaires (audio, events...)
-assets/               # Images, sons et fichiers de locale
-docs/                 # Documentation (mkdocs)
-tools/                # Outils et éditeur de configuration
-```
-
-## Où lire ensuite
-
-- API et internals : `docs/en/dev/02-systeme/`
-- Configuration & localisation : `docs/en/dev/04-Configuration/`
-- Exploitation & déploiement : `docs/en/dev/05-exploitation/`
-
-## Contribution & support
-
-- Utilisez la branche `unstable` pour le travail en cours et ouvrez des PRs vers `main` lorsqu'elles sont prêtes.
-- Suivez les règles de Conventional Commits décrites dans `docs/en/dev/07-annexes/contributing.md`.
-- Pour de l'aide rapide, ouvrez une issue ou une discussion sur GitHub.
-
----
-
-> 💡 Vous souhaitez une page d'accueil plus courte (checklist développeur) ? Dites-moi quelles sections garder et je la réduis.

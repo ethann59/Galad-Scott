@@ -1,6 +1,6 @@
 # Core dependencies for Galad Scott Rail Shooter
-pygame==2.6.1
-esper==3.4
-Pillow==10.4.0
-tomli==1.2.0
-numpy==2.3.0
+pygame==2.6.1 # Moteur du jeu
+esper==3.4 # Architecture Entity-Component-System
+Pillow==10.4.0 # Gestion des images
+tomli==1.2.0 # Gestion des fichiers de configuration
+numpy==2.3.0 # Calculs mathématiques

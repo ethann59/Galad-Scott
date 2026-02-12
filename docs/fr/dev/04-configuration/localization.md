@@ -6,7 +6,7 @@ i18n:
 
 # Système de localisation
 
-Le système de localisation de Galad Islands permet de supporter plusieurs langues avec une architecture modulaire et extensible.
+Le système de localisation de Galad Scott permet de supporter plusieurs langues avec une architecture modulaire et extensible.
 
 ## Vue d'ensemble
 
@@ -20,22 +20,10 @@ src/settings/localization.py    # Gestionnaire principal
 
 assets/locales/                 # Structure modulaire
 ├── french.py                   # Compatibilité - charge assets.locales.french
-├── english.py                  # Compatibilité - charge assets.locales.english
 ├── fr/                         # Traductions françaises modulaires
 │   ├── __init__.py            # Chargement automatique
 │   ├── navigation.py          # Menus, modes de jeu, sélection d'équipe
-│   ├── game.py                # Interface de jeu, victoire/défaite, modales
 │   ├── options.py             # Tous les paramètres et configuration
-│   ├── shops.py               # Interface boutique et objets
-│   ├── help.py                # Conseils, infobulles et aide
-│   ├── actionbar.py           # Éléments de la barre d'action
-│   ├── units.py               # Noms d'unités, classes et descriptions
-│   ├── teams.py               # Noms d'équipes et descriptions
-│   ├── debug.py               # Éléments d'interface de débogage
-│   ├── controls.py            # Paramètres de contrôle et raccourcis
-│   ├── system.py              # Messages système et notifications
-│   ├── tutorial.py            # Contenu du tutoriel et guidage
-│   └── gameplay.py            # Éléments de gameplay principaux
 ├── en/                         # Traductions anglaises modulaires
 │   └── [structure identique]   # Même organisation
 └── [nouvelle_langue]/          # Futures langues

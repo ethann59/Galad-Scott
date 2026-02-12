@@ -1,6 +1,6 @@
 # Support & Contact
 
-Besoin d'aide avec **Galad Islands** ? Voici où trouver de l'assistance et contacter l'équipe.
+Besoin d'aide avec **Galad Scott** ? Voici où trouver de l'assistance et contacter l'équipe.
 
 ## 📖 Documentation
 
@@ -13,13 +13,13 @@ Besoin d'aide avec **Galad Islands** ? Voici où trouver de l'assistance et cont
 
 1. Consultez la **[FAQ](user/help/faq.md)** - les solutions aux problèmes courants s'y trouvent
 2. Vérifiez que vous utilisez la **dernière version** du jeu
-3. Recherchez dans les **[issues existantes](https://github.com/Fydyr/Galad-Islands/issues)**
+3. Recherchez dans les **[issues existantes](https://github.com/ethann59/Galad-Scott/issues)**
 
 ### Signaler un bug
 
 Si votre problème n'est pas résolu :
 
-**[🔗 Créer une issue sur GitHub](https://github.com/Fydyr/Galad-Islands/issues/new)**
+**[🔗 Créer une issue sur GitHub](https://github.com/ethann59/Galad-Scott/issues/new)**
 
 Merci d'inclure :
 
@@ -33,13 +33,13 @@ Merci d'inclure :
 
 Pour proposer de nouvelles fonctionnalités ou améliorations :
 
-**[🔗 GitHub Discussions](https://github.com/Fydyr/Galad-Islands/discussions)**
+**[🔗 GitHub Discussions](https://github.com/ethann59/Galad-Scott/discussions)**
 
 ## 🤝 Communauté & contribution
 
 ### Participer au développement
 
-Envie de contribuer à **Galad Islands** ? Consultez notre **[guide de contribution](dev/07-annexes/contributing.md)**.
+Envie de contribuer à **Galad Scott** ? Consultez notre **[guide de contribution](dev/07-annexes/contributing.md)**.
 
 Types de contributions recherchées :
 
@@ -53,27 +53,27 @@ Types de contributions recherchées :
 
 Pour toute question sur le projet :
 
-- **[GitHub Discussions](https://github.com/Fydyr/Galad-Islands/discussions)** - Forum communautaire
-- **[Issues GitHub](https://github.com/Fydyr/Galad-Islands/issues)** - Bugs et demandes de fonctionnalités
+- **[GitHub Discussions](https://github.com/ethann59/Galad-Scott/discussions)** - Forum communautaire
+- **[Issues GitHub](https://github.com/ethann59/Galad-Scott/issues)** - Bugs et demandes de fonctionnalités
 
 ### Partager le projet
 
 - ⭐ **Star** le projet sur GitHub si vous l'appréciez
-- 🔗 **Partagez** Galad Islands avec vos amis
+- 🔗 **Partagez** Galad Scott avec vos amis
 - 📝 **Écrivez** sur votre expérience de jeu
 
 ## 🛠️ Pour les développeurs
 
 - **[Documentation technique](dev/01-introduction/overview.md)** - Architecture du projet
-- **[Issues développeur](https://github.com/Fydyr/Galad-Islands/issues)** - Bonnes premières contributions
+- **[Issues développeur](https://github.com/ethann59/Galad-Scott/issues)** - Bonnes premières contributions
 
-## � Informations utiles
+## Informations utiles
 
 ### Avant de nous contacter
 
 1. Consultez la **[FAQ](user/help/faq.md)**
-2. Recherchez dans les **[discussions existantes](https://github.com/Fydyr/Galad-Islands/discussions)**
-3. Vérifiez les **[issues ouvertes](https://github.com/Fydyr/Galad-Islands/issues)**
+2. Recherchez dans les **[discussions existantes](https://github.com/ethann59/Galad-Scott/discussions)**
+3. Vérifiez les **[issues ouvertes](https://github.com/ethann59/Galad-Scott/issues)**
 
 ### Pour un contact efficace
 

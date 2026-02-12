@@ -6,89 +6,10 @@ i18n:
 
 # Gestion des versions
 
-## 🎯 Objectif
+La version est definie dans [src/version.py](https://github.com/ethann59/Galad-Scott/blob/main/src/version.py).
 
-Ce document explique comment gérer les versions du projet Galad Islands avec un système de gestion manuelle des versions.
+## Mise a jour manuelle
 
-### Comment gérer les versions manuellement
-
-1. **Activer l'environnement virtuel** :
-
-   ```bash
-   source venv/bin/activate  # Unix/Linux/macOS
-   # ou
-   venv\Scripts\activate     # Windows
-   ```
-
-2. **S'assurer d'être à jour** :
-
-   ```bash
-   git checkout main && git pull origin main
-   ```
-
-3. **Effectuer le bump** :
-
-   ```bash
-   python -m commitizen bump --increment patch --yes --changelog
-   ```
-
-4. **Pousser les changements** :
-
-   ```bash
-   git push origin main && git push origin --tags
-   ```
-
-### Types de commits et leur impact
-
-- ✅ **feat**: nouvelle fonctionnalité → bump **minor**
-- ✅ **fix**: correction de bug → bump **patch**
-- ✅ **perf**: amélioration performances → bump **patch**
-- ✅ **refactor**: refactorisation → bump **patch**
-- ❌ **docs**, **style**, **test**, **chore**, **ci** : pas de bump
-
-## 🔄 Workflow recommandé
-
-1. **Installation initiale** : `python setup_dev.py` (une seule fois)
-2. **Développement normal** : Commits avec messages conventionnels
-3. **Bump manuel** : Utiliser Commitizen pour gérer les versions
-4. **Push avec tags** : `git push origin main && git push origin --tags`
-
-## 🚫 Suppression des hooks pre-commit
-
-> **⚠️ Attention : Hooks supprimés**
->
-> Le système de bump automatique via hooks pre-commit a été **désactivé**. Les versions doivent désormais être gérées manuellement.
->
-> - ✅ **Nouveau** : Gestion manuelle des versions
-> - 🔄 **Legacy** : Les hooks ne sont plus installés par défaut
->
-
-## 🎯 Avantages de cette approche
-
-- ✅ **Contrôle total** : Vous décidez quand faire une release
-- ✅ **Pas de problème de sync** : Tags créés et poussés ensemble
-- ✅ **Changelog cohérent** : Généré localement avec tout l'historique
-- ✅ **Confirmation** : Possibilité de vérifier avant publication
-- ✅ **Rollback facile** : Annulation possible avant push
-
-## 🔍 Dépannage
-
-### Installation et tests
-
-```bash
-# Réinstaller Commitizen
-python -m pip install commitizen
-
-# Vérifier Commitizen
-python -m commitizen version
-```
-
-### Problèmes courants
-
-```bash
-# Environnement virtuel non activé
-source venv/bin/activate  # Unix/Linux/macOS
-# ou
-venv\Scripts\activate     # Windows
-```
-
+1. Modifier `__version__`.
+2. Mettre a jour le changelog si necessaire.
+3. Commit et tag Git.

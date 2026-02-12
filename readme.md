@@ -72,7 +72,6 @@ python main.py
 - **[esper](https://esper.readthedocs.io/)** - Système Entity-Component-System
 - **[Pillow](https://python-pillow.org/)** - Traitement d'images pour les sprites
 - **[tomli](https://tomli.readthedocs.io/)** - Configuration TOML
-- **[requests](https://requests.readthedocs.io/)** - Vérification des mises à jour
 - **[packaging](https://packaging.pypa.io/)** - Comparaison de versions
 
 ## Fonctionnalités
