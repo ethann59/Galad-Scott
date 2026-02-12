@@ -22,9 +22,24 @@ def _scores_path() -> str:
     return os.path.join(root, "scores.json")
 
 
+def _highscore_path() -> str:
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    return os.path.join(root, "highscore")
+
+
 def _ensure_file() -> None:
     path = _scores_path()
     if os.path.exists(path):
+        highscore_path = _highscore_path()
+        if not os.path.exists(highscore_path):
+            try:
+                with open(path, "r", encoding="utf-8") as handle:
+                    data = json.load(handle)
+                scores = data.get("scores", []) if isinstance(data, dict) else []
+            except Exception:
+                scores = []
+            if isinstance(scores, list):
+                _export_highscore(scores)
         return
     data = {
         "scores": [
@@ -33,6 +48,7 @@ def _ensure_file() -> None:
     }
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=2)
+    _export_highscore(data["scores"])
 
 
 def load_scores() -> List[dict]:
@@ -61,12 +77,26 @@ def save_scores(entries: List[dict]) -> None:
     data = {"scores": entries}
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=2)
+    _export_highscore(entries)
+
+
+def _export_highscore(entries: List[dict], limit: int = 10) -> None:
+    path = _highscore_path()
+    lines = []
+    for index, entry in enumerate(entries[:limit], start=1):
+        name = str(entry.get("name", "Player"))
+        score = int(entry.get("score", 0))
+        lines.append(f"{index}. {name} - {score}")
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(lines))
 
 
 def add_score(score: int, name: str) -> None:
     entries = load_scores()
+    trimmed_name = str(name).strip() or "UNK"
+    trimmed_name = trimmed_name[:3]
     entries.append({
-        "name": str(name).strip() or "Player",
+        "name": trimmed_name,
         "score": int(score),
         "timestamp": datetime.now().isoformat(),
     })

@@ -662,7 +662,7 @@ class RailShooterEngine:
         self.window.blit(title_surface, title_rect)
         
         # Nom actuel avec curseur
-        name_display = self._name_input + "_" * (8 - len(self._name_input))
+        name_display = self._name_input + "_" * (3 - len(self._name_input))
         name_chars = list(name_display)
         
         # Affichage caractère par caractère
