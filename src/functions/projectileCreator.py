@@ -104,7 +104,9 @@ def create_projectile(entity, type: str = "bullet"):
                     maxUpSpeed=PROJECTILE_SPEED + speed.currentSpeed if speed else 0,
                 ))
 
-                esper.add_component(bullet_entity, LifetimeComponent(1.2))
+                # Projectiles joueur ont plus de portée (lifetime plus long)
+                lifetime = 3.5 if team_id == Team.ALLY else 2.0
+                esper.add_component(bullet_entity, LifetimeComponent(lifetime))
 
                 esper.add_component(bullet_entity, AttackComponent(
                     hitPoints=PROJECTILE_DAMAGE
