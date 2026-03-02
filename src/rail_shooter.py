@@ -65,6 +65,19 @@ class RailShooterEngine:
 
         self._background_tile = None
         self._background_scroll = 0.0
+        self._background_stretched = None
+        self._background_stretched_size = (0, 0)
+
+        self._hud_font = None
+        self._hud_big_font = None
+        self._name_font = None
+        self._name_big_font = None
+
+        self._hud_cache_key = None
+        self._hud_cache_surface = None
+        self._game_over_surface = None
+        self._name_title_surface = None
+        self._name_instructions_surfaces = []
 
     def run(self) -> None:
         self.initialize()
@@ -101,9 +114,23 @@ class RailShooterEngine:
                 pass
 
         self._preload_assets()
+        self._init_ui_cache()
         self._init_ecs()
         self._create_player()
         self._init_background()
+
+    def _init_ui_cache(self) -> None:
+        self._hud_font = pygame.font.SysFont("Arial", 20, bold=True)
+        self._hud_big_font = pygame.font.SysFont("Arial", 48, bold=True)
+        self._name_font = pygame.font.SysFont("Arial", 24, bold=True)
+        self._name_big_font = pygame.font.SysFont("Arial", 32, bold=True)
+
+        self._game_over_surface = self._hud_big_font.render("GAME OVER", True, (255, 200, 200))
+        self._name_title_surface = self._name_big_font.render("ENTREZ VOTRE NOM:", True, (255, 255, 100))
+        self._name_instructions_surfaces = [
+            self._name_font.render("↑↓: Changer lettre  →: Valider", True, (150, 150, 150)),
+            self._name_font.render("←: Retour  R: Valider nom  F: Effacer", True, (150, 150, 150)),
+        ]
 
     def _preload_assets(self) -> None:
         sprite_manager.preload_sprites(
@@ -202,7 +229,6 @@ class RailShooterEngine:
         self._spawn_enemies(dt)
         self._update_enemies(dt)
         self._move_projectiles(dt)
-        self._background_scroll = (self._background_scroll + self._background_speed * dt)
 
         es.process(dt=dt)
         self._cleanup_entities()
@@ -388,9 +414,7 @@ class RailShooterEngine:
         pos.y += (dy / dist) * speed * boost * dt
 
     def _move_projectiles(self, dt: float) -> None:
-        for ent, (pos, vel) in es.get_components(PositionComponent, VelocityComponent):
-            if not es.has_component(ent, ProjectileComponent):
-                continue
+        for ent, (pos, vel, _) in es.get_components(PositionComponent, VelocityComponent, ProjectileComponent):
             if vel.currentSpeed == 0:
                 continue
             direction_rad = math.radians(pos.direction)
@@ -504,28 +528,31 @@ class RailShooterEngine:
             return
 
         width, height = self.window.get_size()
-        tile_w = self._background_tile.get_width()
-        tile_h = self._background_tile.get_height()
 
-        if tile_w > 0:
-            self._background_scroll = self._background_scroll % tile_w
-        x_start = -self._background_scroll
+        if (
+            self._background_stretched is None
+            or self._background_stretched_size != (width, height)
+        ):
+            self._background_stretched = pygame.transform.smoothscale(
+                self._background_tile,
+                (width, height),
+            )
+            self._background_stretched_size = (width, height)
 
-        y = 0
-        while y < height + tile_h:
-            x = x_start
-            while x < width + tile_w:
-                self.window.blit(self._background_tile, (x, y))
-                x += tile_w
-            y += tile_h
+        self.window.blit(self._background_stretched, (0, 0))
 
     def _render_sprites(self) -> None:
         if self.window is None:
             return
+
+        width, height = self.window.get_size()
+        margin = 100
             
         for ent, (pos, sprite) in es.get_components(PositionComponent, SpriteComponent):
             surface = sprite.surface or sprite.image
             if surface is None:
+                continue
+            if pos.x < -margin or pos.x > width + margin or pos.y < -margin or pos.y > height + margin:
                 continue
             rect = surface.get_rect(center=(int(pos.x), int(pos.y)))
             self.window.blit(surface, rect)
@@ -534,22 +561,26 @@ class RailShooterEngine:
         if self.window is None:
             return
 
-        font = pygame.font.SysFont("Arial", 20, bold=True)
         health_value = 0
         if self.player_id is not None and es.entity_exists(self.player_id):
             health = es.component_for_entity(self.player_id, HealthComponent)
             health_value = int(health.currentHealth)
 
-        text = f"HP {health_value}  Score {self.score}"
-        surface = font.render(text, True, (255, 255, 255))
-        self.window.blit(surface, (16, 12))
+        hud_key = (health_value, self.score)
+        if self._hud_cache_key != hud_key:
+            text = f"HP {health_value}  Score {self.score}"
+            if self._hud_font is not None:
+                self._hud_cache_surface = self._hud_font.render(text, True, (255, 255, 255))
+            self._hud_cache_key = hud_key
+
+        if self._hud_cache_surface is not None:
+            self.window.blit(self._hud_cache_surface, (16, 12))
 
         if self.game_over:
             # Afficher "GAME OVER" en haut
-            big_font = pygame.font.SysFont("Arial", 48, bold=True)
-            over_surface = big_font.render("GAME OVER", True, (255, 200, 200))
-            rect = over_surface.get_rect(center=(self.window.get_width() // 2, 80))
-            self.window.blit(over_surface, rect)
+            if self._game_over_surface is not None:
+                rect = self._game_over_surface.get_rect(center=(self.window.get_width() // 2, 80))
+                self.window.blit(self._game_over_surface, rect)
 
             # Afficher la saisie du nom ou le compte à rebours
             if self._entering_name and not self._name_confirmed:
@@ -557,11 +588,11 @@ class RailShooterEngine:
                     self._render_name_prompt()
                 else:
                     # Affichage du délai restant
-                    font = pygame.font.SysFont("Arial", 24, bold=True)
                     pause_text = f"Saisie dans {self._game_over_pause:.1f}s..."
-                    pause_surface = font.render(pause_text, True, (255, 255, 100))
-                    pause_rect = pause_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
-                    self.window.blit(pause_surface, pause_rect)
+                    if self._name_font is not None:
+                        pause_surface = self._name_font.render(pause_text, True, (255, 255, 100))
+                        pause_rect = pause_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+                        self.window.blit(pause_surface, pause_rect)
 
     def _cleanup(self) -> None:
         if self.created_local_window:
@@ -651,9 +682,6 @@ class RailShooterEngine:
         """Affiche l'interface de saisie de nom style arcade."""
         if self.window is None:
             return
-            
-        font = pygame.font.SysFont("Arial", 24, bold=True)
-        big_font = pygame.font.SysFont("Arial", 32, bold=True)
         
         # Position centrale
         width, height = self.window.get_size()
@@ -661,9 +689,9 @@ class RailShooterEngine:
         center_y = height // 2 + 80
         
         # Titre
-        title_surface = big_font.render("ENTREZ VOTRE NOM:", True, (255, 255, 100))
-        title_rect = title_surface.get_rect(center=(center_x, center_y - 60))
-        self.window.blit(title_surface, title_rect)
+        if self._name_title_surface is not None:
+            title_rect = self._name_title_surface.get_rect(center=(center_x, center_y - 60))
+            self.window.blit(self._name_title_surface, title_rect)
         
         # Nom actuel avec curseur
         name_display = self._name_input + "_" * (3 - len(self._name_input))
@@ -687,19 +715,13 @@ class RailShooterEngine:
                 pygame.draw.rect(self.window, (80, 80, 150), 
                                (start_x + i * char_width - 5, center_y - 20, char_width - 10, 40))
             
-            char_surface = font.render(char, True, color)
-            char_rect = char_surface.get_rect(center=(start_x + i * char_width, center_y))
-            self.window.blit(char_surface, char_rect)
-        
-        # Instructions pour borne d'arcade
-        instructions = [
-            "↑↓: Changer lettre  →: Valider",
-            "←: Retour  R: Valider nom  F: Effacer",
-        ]
-        
+            if self._name_font is not None:
+                char_surface = self._name_font.render(char, True, color)
+                char_rect = char_surface.get_rect(center=(start_x + i * char_width, center_y))
+                self.window.blit(char_surface, char_rect)
+
         y_offset = center_y + 80
-        for i, instruction in enumerate(instructions):
-            inst_surface = font.render(instruction, True, (150, 150, 150))
+        for i, inst_surface in enumerate(self._name_instructions_surfaces):
             inst_rect = inst_surface.get_rect(center=(center_x, y_offset + i * 30))
             self.window.blit(inst_surface, inst_rect)
 
