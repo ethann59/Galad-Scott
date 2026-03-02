@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/support/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/support/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/01-introduction/overview/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/01-introduction/overview/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/architecture/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/architecture/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/rendering_optimizations/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/rendering_optimizations/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/tower-system-implementation/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/tower-system-implementation/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/game-engine/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/game-engine/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/ui-system/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/ui-system/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/unit-system/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/api/unit-system/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/ai-system/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/ai-system/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/components/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/components/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/managers/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/managers/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/processors/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/processors/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/special-capacity-system/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/special-capacity-system/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/sprite-manager/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/02-systeme/modules/sprite-manager/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/03-installation/requirements/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/03-installation/requirements/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/04-configuration/configuration/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/04-configuration/configuration/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/04-configuration/debug-mode/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/04-configuration/debug-mode/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/04-configuration/localization/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/04-configuration/localization/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/05-exploitation/deployment/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/05-exploitation/deployment/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/05-exploitation/operations/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/05-exploitation/operations/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/05-exploitation/systeme/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/05-exploitation/systeme/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/06-maintenance/maintenance/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/06-maintenance/maintenance/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/06-maintenance/versioning/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/06-maintenance/versioning/"/>
+    </url>
+    <url>
+        <loc>https://ethann59.github.io/Galad-Scott/dev/07-annexes/contributing/</loc>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://ethann59.github.io/Galad-Scott/dev/07-annexes/contributing/"/>
+    </url>
+</urlset>
