@@ -8,6 +8,9 @@ i18n:
 
 Le jeu utilise `galad_config.json` pour stocker les preferences utilisateur. Le fichier est gere par [src/settings/settings.py](https://github.com/ethann59/Galad-Scott/blob/main/src/settings/settings.py).
 
+Galad Scott limite l'utilisateur au minimum de configurations pour simplifier l'experience. Les options disponibles sont :
+- volume sonore (master, musique, effets)
+
 ## Exemple de configuration
 
 ```json
@@ -29,7 +32,7 @@ Le jeu utilise `galad_config.json` pour stocker les preferences utilisateur. Le 
     "unit_move_backward": ["down"],
     "unit_turn_left": ["left"],
     "unit_turn_right": ["right"],
-    "unit_shoot": ["a"]
+    "unit_shoot": ["f"]
   }
 }
 ```

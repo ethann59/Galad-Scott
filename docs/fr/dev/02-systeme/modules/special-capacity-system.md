@@ -7,26 +7,19 @@ i18n:
 # Systeme de capacites speciales
 
 Les capacites speciales sont modelisees par des composants `Spe*` et mises a jour par `CapacitiesSpecialesProcessor`.
+Ils sont pas encore appelés en jeu pour le moment.
 
 ## Composants
 
 Fichiers dans [src/components/special](https://github.com/ethann59/Galad-Scott/tree/main/src/components/special) :
 
 - `SpeScout` : invincibilite temporaire
-- `SpeMaraudeur` : reduction de degats
-- `SpeLeviathan` : seconde salve
-- `SpeDruid` : lierre immobilisant
-- `SpeArchitect` : boost de rechargement en zone
-- `SpeKamikazeComponent` : boost de vitesse
-- `isVinedComponent` + `VineComponent` : effet lierre
 
 ## Mise a jour
 
 Le processeur [src/processeurs/CapacitiesSpecialesProcessor.py](https://github.com/ethann59/Galad-Scott/blob/main/src/processeurs/CapacitiesSpecialesProcessor.py) :
 
 - Appelle `update(dt)` sur chaque composant `Spe*`.
-- Met a jour les effets (ex: lierre via `VineProcessor`).
-- Applique les reductions de cooldown via `SpeArchitect` sur les `RadiusComponent`.
 
 ## Integration
 

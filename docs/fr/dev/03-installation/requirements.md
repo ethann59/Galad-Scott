@@ -9,7 +9,7 @@ i18n:
 ## Prerequis minimum
 
 - Python 3.9+
-- 2 GB RAM (4 GB recommande)
+- 1 GB RAM
 - 500 MB d'espace disque
 
 ## Dependances systeme

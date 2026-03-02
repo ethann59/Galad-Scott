@@ -8,6 +8,8 @@ i18n:
 
 La version est definie dans [src/version.py](https://github.com/ethann59/Galad-Scott/blob/main/src/version.py).
 
+Notez que elle est pas utilisé en jeu.
+
 ## Mise a jour manuelle
 
 1. Modifier `__version__`.
