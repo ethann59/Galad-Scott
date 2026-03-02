@@ -43,7 +43,15 @@ class AudioManager:
     """Manages background music and sound effects."""
 
     def __init__(self):
-        pygame.mixer.init()
+        # Try to initialize mixer, but don't crash if audio device unavailable
+        self.audio_available = False
+        try:
+            pygame.mixer.init()
+            self.audio_available = True
+        except Exception as e:
+            print(f"⚠️ Audio initialization failed: {e}")
+            print("⚠️ Game will continue without sound")
+            
         self.music_loaded = False
         self.current_music_path: Optional[str] = None
         self.select_sound: Optional[pygame.mixer.Sound] = None
@@ -67,11 +75,15 @@ class AudioManager:
 
     def _load_assets(self):
         """Loads audio assets."""
+        if not self.audio_available:
+            return
         self.play_music(MUSIC_MAIN_THEME)
         self._load_sound_effects()
 
     def play_music(self, music_path: str, loops: int = -1):
         """Loads and plays a music file."""
+        if not self.audio_available:
+            return
         full_path = get_resource_path(music_path)
         if self.current_music_path == full_path:
             return  # Avoid reloading the same music
@@ -88,6 +100,8 @@ class AudioManager:
 
     def _load_sound_effects(self):
         """Loads sound effects."""
+        if not self.audio_available:
+            return
         try:
             self.select_sound = pygame.mixer.Sound(
                 get_resource_path(os.path.join("assets", "sounds", "select_sound.ogg"))
@@ -100,7 +114,7 @@ class AudioManager:
 
     def _ensure_explosion_initialized(self):
         """Initializes the dedicated explosion channel if not already done."""
-        if self._explosion_initialized:
+        if not self.audio_available or self._explosion_initialized:
             return
 
         try:
@@ -165,7 +179,7 @@ class AudioManager:
 
     def update_music_volume(self):
         """Updates music volume from configuration."""
-        if not self.music_loaded:
+        if not self.audio_available or not self.music_loaded:
             return
 
         music_volume = settings.config_manager.get("volume_music", 0.5)
@@ -199,7 +213,7 @@ class AudioManager:
 
     def stop_music(self):
         """Stops the music."""
-        if self.music_loaded:
+        if self.audio_available and self.music_loaded:
             pygame.mixer.music.stop()
 
     def get_select_sound(self) -> Optional[pygame.mixer.Sound]:
@@ -247,7 +261,7 @@ class AudioManager:
 
     def _ensure_shoot_initialized(self):
         """Initializes the dedicated shoot channel if not already done."""
-        if self._shoot_initialized:
+        if not self.audio_available or self._shoot_initialized:
             return
 
         try:
@@ -261,6 +275,8 @@ class AudioManager:
 
     def _load_shoot_sounds(self):
         """Loads all shoot sounds from assets/sounds/shoot folder."""
+        if not self.audio_available:
+            return
         shoot_dir = os.path.join("assets", "sounds", "shoot")
         full_path = get_resource_path(shoot_dir)
 
@@ -390,6 +406,8 @@ class VolumeWatcher:
     
     def _force_volume_from_config(self):
         """HACK: Force le volume en lisant directement galad_config.json au démarrage."""
+        if not self.audio_manager.audio_available:
+            return
         try:
             with open("galad_config.json", "r") as f:
                 config = json.load(f)

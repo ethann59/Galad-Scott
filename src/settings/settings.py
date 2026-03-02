@@ -36,7 +36,15 @@ DEFAULT_CONFIG = {
         "unit_move_backward": ["down"],
         "unit_turn_left": ["left"],
         "unit_turn_right": ["right"],
-        "unit_shoot": ["a"],
+        "unit_shoot": ["r"],
+        "menu_validate": ["r"],
+        "menu_back": ["f"],
+        "menu_button_bottom_1": ["f"],
+        "menu_button_bottom_2": ["g"],
+        "menu_button_bottom_3": ["h"],
+        "menu_button_top_1": ["r"],
+        "menu_button_top_2": ["t"],
+        "menu_button_top_3": ["y"],
     }
 }
 

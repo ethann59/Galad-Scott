@@ -65,25 +65,26 @@ def show_options_window() -> None:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
+                    elif event.key == pygame.K_f:  # Bouton F pour retour/annuler
+                        running = False
                     elif event.key in (pygame.K_UP, pygame.K_w):
                         selected = (selected - 1) % options_count
                     elif event.key in (pygame.K_DOWN, pygame.K_s):
                         selected = (selected + 1) % options_count
-                    elif event.key in (pygame.K_LEFT, pygame.K_a):
+                    elif event.key == pygame.K_r:  # Bouton R pour valider
+                        if selected == 2:  # Appliquer et fermer
+                            _apply_settings(music_vol, effects_vol)
+                            running = False
+                    elif event.key in (pygame.K_LEFT,):
                         if selected == 0:  # Musique
                             music_vol = max(0, music_vol - 10)
                         elif selected == 1:  # Effets
                             effects_vol = max(0, effects_vol - 10)
-                    elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                    elif event.key in (pygame.K_RIGHT,):
                         if selected == 0:  # Musique
                             music_vol = min(100, music_vol + 10)
                         elif selected == 1:  # Effets
                             effects_vol = min(100, effects_vol + 10)
-                    elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                        if selected == 2:  # Appliquer et fermer
-                            # Appliquer les changements
-                            _apply_settings(music_vol, effects_vol)
-                            running = False
             
             # Rendu simple
             surface.fill((20, 20, 40))
@@ -111,18 +112,6 @@ def show_options_window() -> None:
                 if i == selected:
                     pygame.draw.rect(surface, (255, 215, 0), 
                                    (80, y + i * spacing - 5, 300, 40), 2)
-            
-            # Instructions
-            instructions = [
-                "↑↓: Naviguer  ←→: Ajuster",
-                "Entrée: Appliquer  Échap: Annuler"
-            ]
-            
-            inst_y = surface.get_height() - 100
-            for instruction in instructions:
-                inst_text = pygame.font.Font(None, 24).render(instruction, True, (150, 150, 150))
-                surface.blit(inst_text, (50, inst_y))
-                inst_y += 30
             
             pygame.display.flip()
             clock.tick(60)

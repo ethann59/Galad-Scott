@@ -1,1 +1,1 @@
-Déplacement vaisseau:Tir principal:Sélection lettre:Valider nom:aucun:Effacer lettre:aucun
+Déplacement vaisseau + Navigation lettres:Tir principal + Valider nom:aucun:aucun:Retour + Effacer lettre:aucun:aucun

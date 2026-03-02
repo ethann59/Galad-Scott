@@ -334,10 +334,15 @@ class MainMenu:
             if self.buttons:
                 self.selected_button_index = (self.selected_button_index + 1) % len(self.buttons)
                 
-        elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+        elif event.key in (pygame.K_r, pygame.K_SPACE):
             if self.buttons and self.selected_button_index < len(self.buttons):
                 selected_button = self.buttons[self.selected_button_index]
                 selected_button.callback()  # Appeler directement le callback
+        
+        # Bouton F pour retour/annuler
+        elif event.key == pygame.K_f:
+            if self.state.running:
+                self.state.running = False
 
     def _handle_resize(self, event):
         """Handles window resizing."""

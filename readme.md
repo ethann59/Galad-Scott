@@ -47,22 +47,24 @@ Pour lancer le jeu :
 python main.py
 ```
 
-### Contrôles (à mettre à jour pour arcade)
+### Contrôles Borne d'Arcade
 
-**Déplacement :**
-- `↑/Z` : Monter
-- `↓/S` : Descendre  
-- `←/Q` : Aller à gauche
-- `→/D` : Aller à droite
+**Déplacement (Joystick) :**
+- `↑` : Monter
+- `↓` : Descendre  
+- `←` : Aller à gauche
+- `→` : Aller à droite
 
-**Combat :**
-- `ESPACE` : Tirer
-- `Clic souris` : Tirer
+**Boutons :**
+- `R` (bouton haut 1) : Tirer / Valider dans les menus
+- `F` (bouton bas 1) : Retour dans les menus
+- Boutons disponibles : F/G/H (bas) et R/T/Y (haut)
 
 **Menu :**
 - `↑↓` : Naviguer dans les menus
-- `ENTRÉE` : Valider
-- `ÉCHAP` : Retour/Quitter
+- `R` : Valider
+- `F` : Retour
+- `ÉCHAP` : Quitter (développement)
 
 ## Dépendances
 

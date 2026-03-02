@@ -12,7 +12,7 @@ TRANSLATIONS = {
     "options.apply": "Appliquer et fermer",
     "options.cancel": "Annuler",
     "options.navigation": "↑↓: Naviguer  ←→: Ajuster",
-    "options.instructions": "Entrée: Appliquer  Échap: Annuler",
+    "options.instructions": "A: Appliquer  Échap: Annuler",
     "options.check_now": "Vérifier maintenant",
     "options.updates_section": "Mises à jour",
     "options.vsync": "Synchronisation verticale",

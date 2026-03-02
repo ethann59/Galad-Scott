@@ -164,14 +164,14 @@ class RailShooterEngine:
             if self._entering_name and event.type == pygame.KEYDOWN and self._game_over_pause <= 0:
                 self._handle_name_input_arcade(event)
                 continue
-            # Combinaison pause: boutons A+E (système pause)
+            # Combinaison pause: boutons R+F (système pause sur borne arcade)
             if event.type == pygame.KEYDOWN:
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_a] and keys[pygame.K_e]:
+                if keys[pygame.K_r] and keys[pygame.K_f]:
                     self.running = False
                     return
-            # Bouton A pour tirer (contrôle borne)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_a and not self._entering_name:
+            # Bouton R pour tirer (contrôle borne d'arcade)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r and not self._entering_name:
                 self._try_player_fire()
             # Support clic souris pour test
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -241,8 +241,8 @@ class RailShooterEngine:
         if self.player_fire_cooldown > 0:
             self.player_fire_cooldown -= dt
 
-        # Tir automatique continu pour borne d'arcade - Bouton A
-        if keys[pygame.K_a]:
+        # Tir automatique continu pour borne d'arcade - Bouton R
+        if keys[pygame.K_r]:
             self._try_player_fire()
 
     def _spawn_enemies(self, dt: float) -> None:
