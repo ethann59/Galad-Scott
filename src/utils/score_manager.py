@@ -4,16 +4,16 @@ from datetime import datetime
 from typing import List
 
 _DEFAULT_SCORES = [
-    ("Astra", 520),
-    ("Rémi", 460),
-    ("Nami", 390),
-    ("Orion", 320),
-    ("Pico", 260),
-    ("Edouard", 210),
-    ("Enzo", 170),
-    ("Julien", 130),
-    ("Iris", 90),
-    ("Lieserl", 60),
+    ("REM", 520),
+    ("RPK", 460),
+    ("SEB", 390),
+    ("JDG", 320),
+    ("ADO", 260),
+    ("EDO", 210),
+    ("ENZ", 170),
+    ("JUL", 130),
+    ("IRI", 90),
+    ("LIS", 60),
 ]
 
 
@@ -30,16 +30,14 @@ def _highscore_path() -> str:
 def _ensure_file() -> None:
     path = _scores_path()
     if os.path.exists(path):
-        highscore_path = _highscore_path()
-        if not os.path.exists(highscore_path):
-            try:
-                with open(path, "r", encoding="utf-8") as handle:
-                    data = json.load(handle)
-                scores = data.get("scores", []) if isinstance(data, dict) else []
-            except Exception:
-                scores = []
-            if isinstance(scores, list):
-                _export_highscore(scores)
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+            scores = data.get("scores", []) if isinstance(data, dict) else []
+        except Exception:
+            scores = []
+        if isinstance(scores, list):
+            _export_highscore(scores)
         return
     data = {
         "scores": [
@@ -83,10 +81,11 @@ def save_scores(entries: List[dict]) -> None:
 def _export_highscore(entries: List[dict], limit: int = 10) -> None:
     path = _highscore_path()
     lines = []
-    for index, entry in enumerate(entries[:limit], start=1):
-        name = str(entry.get("name", "Player"))
+    for entry in entries[:limit]:
+        name = str(entry.get("name", "UNK")).strip().upper() or "UNK"
+        name = name[:3]
         score = int(entry.get("score", 0))
-        lines.append(f"{index}. {name} - {score}")
+        lines.append(f"{name}-{score}")
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(lines))
 
@@ -94,7 +93,7 @@ def _export_highscore(entries: List[dict], limit: int = 10) -> None:
 def add_score(score: int, name: str) -> None:
     entries = load_scores()
     trimmed_name = str(name).strip() or "UNK"
-    trimmed_name = trimmed_name[:3]
+    trimmed_name = trimmed_name[:3].upper()
     entries.append({
         "name": trimmed_name,
         "score": int(score),
