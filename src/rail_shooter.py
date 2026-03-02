@@ -542,11 +542,13 @@ class RailShooterEngine:
         self.window.blit(surface, (16, 12))
 
         if self.game_over:
+            # Afficher "GAME OVER" en haut
             big_font = pygame.font.SysFont("Arial", 48, bold=True)
             over_surface = big_font.render("GAME OVER", True, (255, 200, 200))
-            rect = over_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
+            rect = over_surface.get_rect(center=(self.window.get_width() // 2, 80))
             self.window.blit(over_surface, rect)
 
+            # Afficher la saisie du nom ou le compte à rebours
             if self._entering_name and not self._name_confirmed:
                 if self._game_over_pause <= 0:
                     self._render_name_prompt()
@@ -555,7 +557,7 @@ class RailShooterEngine:
                     font = pygame.font.SysFont("Arial", 24, bold=True)
                     pause_text = f"Saisie dans {self._game_over_pause:.1f}s..."
                     pause_surface = font.render(pause_text, True, (255, 255, 100))
-                    pause_rect = pause_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2 + 80))
+                    pause_rect = pause_surface.get_rect(center=(self.window.get_width() // 2, self.window.get_height() // 2))
                     self.window.blit(pause_surface, pause_rect)
 
     def _cleanup(self) -> None:
@@ -587,25 +589,24 @@ class RailShooterEngine:
 
 
     def _handle_name_input_arcade(self, event: pygame.event.Event) -> None:
-        "Interface de saisie style borne d'arcade - contrôles O,K,L,M + boutons."
-        if event.key == pygame.K_3:
-            # Valider le nom (Bouton 3)
+        """Interface de saisie style borne d'arcade - utilise les touches R/F et flèches."""
+        # R pour valider le nom
+        if event.key == pygame.K_r:
             self._name_confirmed = True
             self._entering_name = False
             self.game_over_timer = 1.5
             self._save_score_once()
             return
-            
-        elif event.key == pygame.K_k:
-            # Changer la lettre vers le haut (K = haut sur borne)
+        
+        # Flèches UP/DOWN pour changer la lettre
+        elif event.key == pygame.K_UP:
             self._letter_index = (self._letter_index - 1) % len(self._available_chars)
             
-        elif event.key == pygame.K_m:
-            # Changer la lettre vers le bas (M = bas sur borne)
+        elif event.key == pygame.K_DOWN:
             self._letter_index = (self._letter_index + 1) % len(self._available_chars)
-            
-        elif event.key == pygame.K_l:
-            # Confirmer la lettre et passer à la suivante (L = droite sur borne)
+        
+        # Flèche RIGHT pour confirmer la lettre et aller à la suivante
+        elif event.key == pygame.K_RIGHT:
             if self._char_position < len(self._name_input):
                 # Modifier lettre existante
                 name_list = list(self._name_input)
@@ -620,9 +621,9 @@ class RailShooterEngine:
             if self._char_position < 2:  # Max 3 caractères (0-2)
                 self._char_position += 1
                 self._letter_index = 0  # Reset sur 'A'
-                
-        elif event.key == pygame.K_o:
-            # Revenir au caractère précédent (O = gauche sur borne)
+        
+        # Flèche LEFT pour revenir au caractère précédent
+        elif event.key == pygame.K_LEFT:
             if self._char_position > 0:
                 self._char_position -= 1
                 # Charger la lettre actuelle à cette position
@@ -632,13 +633,13 @@ class RailShooterEngine:
                         self._letter_index = self._available_chars.index(current_char)
                     except ValueError:
                         self._letter_index = 0
-                        
-        elif event.key == pygame.K_2:
-            # Effacer le caractère actuel (Bouton 2)
+        
+        # F pour effacer le caractère actuel
+        elif event.key == pygame.K_f:
             if self._name_input and self._char_position > 0:
                 self._char_position -= 1
                 self._name_input = self._name_input[:self._char_position] + self._name_input[self._char_position + 1:]
-                
+        
         # S'assurer que _name_input ne dépasse pas la position
         if len(self._name_input) < self._char_position:
             self._char_position = len(self._name_input)
@@ -689,18 +690,15 @@ class RailShooterEngine:
         
         # Instructions pour borne d'arcade
         instructions = [
-            "↑↓: Changer lettre",
-            "→: Valider lettre", 
-            "←: Retour",
-            "Bouton E: Confirmer nom"
+            "↑↓: Changer lettre  →: Valider",
+            "←: Retour  R: Valider nom  F: Effacer",
         ]
         
-        y_offset = center_y + 60
-        for instruction in instructions:
-            inst_surface = font.render(instruction, True, (200, 200, 200))
-            inst_rect = inst_surface.get_rect(center=(center_x, y_offset))
+        y_offset = center_y + 80
+        for i, instruction in enumerate(instructions):
+            inst_surface = font.render(instruction, True, (150, 150, 150))
+            inst_rect = inst_surface.get_rect(center=(center_x, y_offset + i * 30))
             self.window.blit(inst_surface, inst_rect)
-            y_offset += 25
 
 
 def run_rail_shooter(window: Optional[pygame.Surface] = None, audio_manager=None) -> None:

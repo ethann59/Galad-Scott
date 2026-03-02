@@ -97,6 +97,7 @@ HOOKS_UNIVERSAL.md
 benchmark_results_*.csv
 maraudeur_comparison_*.csv
 
-
+#Fichiers lié à la borne d'arcade
 scores.json
 highscore
+.requirements_installed
