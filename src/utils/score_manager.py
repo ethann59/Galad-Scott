@@ -1,5 +1,6 @@
 import json
 import os
+import unicodedata
 from datetime import datetime
 from typing import List
 
@@ -78,12 +79,18 @@ def save_scores(entries: List[dict]) -> None:
     _export_highscore(entries)
 
 
+def _normalize_arcade_name(name: str) -> str:
+    normalized = unicodedata.normalize("NFD", str(name).strip().upper())
+    ascii_only = "".join(ch for ch in normalized if unicodedata.category(ch) != "Mn")
+    filtered = "".join(ch for ch in ascii_only if ch.isalnum())
+    return (filtered[:3] or "UNK")
+
+
 def _export_highscore(entries: List[dict], limit: int = 10) -> None:
     path = _highscore_path()
     lines = []
     for entry in entries[:limit]:
-        name = str(entry.get("name", "UNK")).strip().upper() or "UNK"
-        name = name[:3]
+        name = _normalize_arcade_name(entry.get("name", "UNK"))
         score = int(entry.get("score", 0))
         lines.append(f"{name}-{score}")
     with open(path, "w", encoding="utf-8") as handle:
@@ -92,8 +99,7 @@ def _export_highscore(entries: List[dict], limit: int = 10) -> None:
 
 def add_score(score: int, name: str) -> None:
     entries = load_scores()
-    trimmed_name = str(name).strip() or "UNK"
-    trimmed_name = trimmed_name[:3].upper()
+    trimmed_name = _normalize_arcade_name(name)
     entries.append({
         "name": trimmed_name,
         "score": int(score),
