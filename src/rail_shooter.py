@@ -48,7 +48,7 @@ class RailShooterEngine:
         self._last_dt = 0.0
         self._background_speed = 80.0
         self._projectile_speed_multiplier = 2.5
-        self._player_projectile_speed_multiplier = 10.0  # Augmenté de 6.0 à 10.0 pour plus de portée
+        self._player_projectile_speed_multiplier = 35.0  # Projectiles alliés nettement plus rapides
         self._score_saved = False
         
         # Variables pour la saisie de nom style borne d'arcade
@@ -346,8 +346,8 @@ class RailShooterEngine:
 
         state["fire_cooldown"] -= dt
         if player_pos is not None and state["fire_cooldown"] <= 0:
-            # Tirer vers la gauche (direction opposée au joueur)
-            self._fire_with_direction(enemy_id, pos, 180.0)
+            # Avec la formule de déplacement actuelle (-cos/-sin), 0° part vers la gauche
+            self._fire_with_direction(enemy_id, pos, 0.0)
             state["fire_cooldown"] = random.uniform(0.6, 1.1)
 
     def _update_maraudeur_enemy(self, enemy_id: int, pos: PositionComponent, state: Dict[str, float], dt: float, player_pos: Optional[PositionComponent]) -> None:
@@ -361,8 +361,8 @@ class RailShooterEngine:
         if state.get("burst_shots", 0.0) > 0:
             state["burst_timer"] -= dt
             if state["burst_timer"] <= 0:
-                # Marauders tirent vers la gauche avec un peu de spread
-                angle = 180.0 + random.uniform(-10.0, 10.0)
+                # Avec la formule de déplacement actuelle (-cos/-sin), 0° part vers la gauche
+                angle = 0.0 + random.uniform(-10.0, 10.0)
                 self._fire_with_direction(enemy_id, pos, angle)
                 state["burst_shots"] -= 1
                 state["burst_timer"] = 0.12

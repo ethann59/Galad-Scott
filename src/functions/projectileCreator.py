@@ -1,4 +1,5 @@
 import esper
+import pygame
 from src.components.core.positionComponent import PositionComponent
 from src.components.core.velocityComponent import VelocityComponent
 from src.components.core.radiusComponent import RadiusComponent
@@ -108,8 +109,9 @@ def create_projectile(entity, type: str = "bullet"):
                 lifetime = 3.5 if team_id == Team.ALLY else 2.0
                 esper.add_component(bullet_entity, LifetimeComponent(lifetime))
 
+                damage = 1 if team_id == Team.ENEMY else PROJECTILE_DAMAGE
                 esper.add_component(bullet_entity, AttackComponent(
-                    hitPoints=PROJECTILE_DAMAGE
+                    hitPoints=damage
                 ))
 
                 # Identifier cette entity comme un projectile
@@ -124,7 +126,15 @@ def create_projectile(entity, type: str = "bullet"):
 
             if size:
                 width, height = size
-                esper.add_component(bullet_entity, sprite_manager.create_sprite_component(sprite_id, width, height))
+                sprite_component = sprite_manager.create_sprite_component(sprite_id, width, height)
+                if team_id == Team.ALLY and sprite_component is not None:
+                    surface = sprite_component.surface or sprite_component.image
+                    if surface is not None:
+                        flipped = pygame.transform.flip(surface, True, False)
+                        sprite_component.surface = flipped
+                        if sprite_component.image is not None:
+                            sprite_component.image = pygame.transform.flip(sprite_component.image, True, False)
+                esper.add_component(bullet_entity, sprite_component)
             else:
                 # Fallback to old method
                 esper.add_component(bullet_entity, SpriteComponent(
