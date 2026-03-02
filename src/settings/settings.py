@@ -20,8 +20,8 @@ CONFIG_FILE = "galad_config.json"
 
 DEFAULT_CONFIG = {
     "screen_width": 1280,
-    "screen_height": 1024,
-    "window_mode": "fullscreen",  # "windowed", "fullscreen" -- Par défaut en fenêtré pour le développement
+    "screen_height": 962,
+    "window_mode": "fullscreen",  # "windowed", "fullscreen" -- Doit être en fullscreen pour la borne d'arcade sinon ça lag
     "volume_master": 0.8,
     "volume_music": 0.5,
     "volume_effects": 0.7,
