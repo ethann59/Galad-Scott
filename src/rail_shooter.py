@@ -12,7 +12,9 @@ from src.components.core.projectileComponent import ProjectileComponent
 from src.components.core.spriteComponent import SpriteComponent
 from src.components.core.teamComponent import TeamComponent
 from src.components.core.velocityComponent import VelocityComponent
+from src.components.core.immunityComponent import ImmunityComponent
 from src.constants.assets import MUSIC_IN_GAME
+from src.constants.gameplay import SPECIAL_ABILITY_COOLDOWN, ZASPER_INVINCIBILITY_DURATION
 from src.constants.team import Team
 from src.functions.projectileCreator import create_projectile
 from src.managers.sprite_manager import SpriteID, sprite_manager
@@ -33,6 +35,7 @@ class RailShooterEngine:
         self.clock: Optional[pygame.time.Clock] = None
         self.player_id: Optional[int] = None
         self.player_fire_cooldown = 0.0
+        self._last_player_health = 0  # Tracker pour détecter les dégâts
         self.enemy_fire_cooldowns: Dict[int, float] = {}
         self.enemy_states: Dict[int, Dict[str, float]] = {}
         self.enemy_entities: Set[int] = set()
@@ -72,6 +75,14 @@ class RailShooterEngine:
         self._hud_big_font = None
         self._name_font = None
         self._name_big_font = None
+
+        self._player_immunity_timer = 0.0
+        self._player_immunity_duration = 2.0  # 2 secondes d'immunité
+        self._player_special_duration = float(ZASPER_INVINCIBILITY_DURATION)
+        self._player_special_cooldown = float(SPECIAL_ABILITY_COOLDOWN)
+        self._player_special_cooldown_timer = 0.0
+        self._player_blink_rate = 0.1  # Clignotement 10x par seconde
+        self._player_visible = True
 
         self._hud_cache_key = None
         self._hud_cache_surface = None
@@ -175,6 +186,7 @@ class RailShooterEngine:
             es.add_component(player, sprite)
 
         self.player_id = player
+        self._last_player_health = 3  # Initialiser au HP max
 
     def _init_background(self) -> None:
         if self.window is None:
@@ -200,6 +212,9 @@ class RailShooterEngine:
             # Bouton R pour tirer (contrôle borne d'arcade)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r and not self._entering_name:
                 self._try_player_fire()
+            # Bouton T pour capacité spéciale Scott (invincibilité temporaire)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_t and not self._entering_name and not self.game_over:
+                self._activate_scott_special()
             # Support clic souris pour test
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._try_player_fire()
@@ -232,11 +247,25 @@ class RailShooterEngine:
 
         es.process(dt=dt)
         self._cleanup_entities()
+        self._check_player_damage()  # V\u00e9rifier les d\u00e9g\u00e2ts du joueur et appliquer l'immunit\u00e9
         self._check_game_over()
 
     def _update_player(self, dt: float) -> None:
         if self.player_id is None or not es.entity_exists(self.player_id):
             return
+
+        if self._player_special_cooldown_timer > 0:
+            self._player_special_cooldown_timer = max(0.0, self._player_special_cooldown_timer - dt)
+
+        # Gérer l'immunité et le clignotement
+        if self._player_immunity_timer > 0:
+            self._player_immunity_timer -= dt
+            self._player_visible = int(self._player_immunity_timer * (1.0 / self._player_blink_rate)) % 2 == 0
+        else:
+            self._player_visible = True
+            # Retirer le composant d'immunité quand l'immunité expire
+            if es.has_component(self.player_id, ImmunityComponent):
+                es.remove_component(self.player_id, ImmunityComponent)
 
         speed = 260.0
         dx = 0.0
@@ -270,6 +299,18 @@ class RailShooterEngine:
         # Tir automatique continu pour borne d'arcade - Bouton R
         if keys[pygame.K_r]:
             self._try_player_fire()
+
+    def _activate_scott_special(self) -> None:
+        if self.player_id is None or not es.entity_exists(self.player_id):
+            return
+        if self._player_special_cooldown_timer > 0:
+            return
+
+        self._player_immunity_timer = max(self._player_immunity_timer, self._player_special_duration)
+        self._player_special_cooldown_timer = self._player_special_cooldown
+
+        if not es.has_component(self.player_id, ImmunityComponent):
+            es.add_component(self.player_id, ImmunityComponent())
 
     def _spawn_enemies(self, dt: float) -> None:
         if self.window is None:
@@ -495,6 +536,21 @@ class RailShooterEngine:
 
         self.despawned_enemies.clear()
 
+    def _check_player_damage(self) -> None:
+        """V\u00e9rifier si le joueur a pris des d\u00e9g\u00e2ts et activer l'immunit\u00e9."""
+        if self.player_id is None or not es.entity_exists(self.player_id):
+            return
+
+        health = es.component_for_entity(self.player_id, HealthComponent)
+        current_health = health.currentHealth
+
+        if current_health < self._last_player_health:
+            # Le joueur a pris des d\u00e9g\u00e2ts - activer l'immunit\u00e9
+            self._player_immunity_timer = self._player_immunity_duration            # Ajouter le composant d'immunité au joueur
+            if not es.has_component(self.player_id, ImmunityComponent):
+                es.add_component(self.player_id, ImmunityComponent())
+        self._last_player_health = current_health
+
     def _check_game_over(self) -> None:
         if self.player_id is None:
             return
@@ -547,8 +603,13 @@ class RailShooterEngine:
 
         width, height = self.window.get_size()
         margin = 100
+        is_player_immune = self._player_immunity_timer > 0
             
         for ent, (pos, sprite) in es.get_components(PositionComponent, SpriteComponent):
+            # Passer le joueur si imune et en train de clignoter invisiblement
+            if ent == self.player_id and is_player_immune and not self._player_visible:
+                continue
+
             surface = sprite.surface or sprite.image
             if surface is None:
                 continue
@@ -566,9 +627,12 @@ class RailShooterEngine:
             health = es.component_for_entity(self.player_id, HealthComponent)
             health_value = int(health.currentHealth)
 
-        hud_key = (health_value, self.score)
+        special_cd = max(0.0, float(self._player_special_cooldown_timer))
+        special_state = "READY" if special_cd <= 0 else f"{special_cd:.1f}s"
+
+        hud_key = (health_value, self.score, special_state)
         if self._hud_cache_key != hud_key:
-            text = f"HP {health_value}  Score {self.score}"
+            text = f"HP {health_value}  Score {self.score}  SP {special_state}"
             if self._hud_font is not None:
                 self._hud_cache_surface = self._hud_font.render(text, True, (255, 255, 255))
             self._hud_cache_key = hud_key

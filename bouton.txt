@@ -1,1 +1,1 @@
-Déplacement vaisseau:Tir principal:aucun:aucun:Retour:aucun:aucun
+Déplacement vaisseau:Tir principal:Capacité spéciale:aucun:Retour:aucun:aucun

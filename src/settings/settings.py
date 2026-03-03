@@ -37,6 +37,7 @@ DEFAULT_CONFIG = {
         "unit_turn_left": ["left"],
         "unit_turn_right": ["right"],
         "unit_shoot": ["r"],
+        "unit_special": ["t"],
         "menu_validate": ["r"],
         "menu_back": ["f"],
         "menu_button_bottom_1": ["f"],

@@ -23,6 +23,7 @@ from src.components.events.islandResourceComponent import IslandResourceComponen
 from src.components.core.towerComponent import TowerComponent
 from src.functions.handleHealth import processHealth
 from src.components.events.banditsComponent import Bandits
+from src.components.core.immunityComponent import ImmunityComponent
 
 class CollisionProcessor(esper.Processor):
     def __init__(self, graph=None):
@@ -239,13 +240,21 @@ class CollisionProcessor(esper.Processor):
                 return
 
             # Non-mine and non-bandit target: apply damage if possible
+            # But check for immunity first
+            is_immune = esper.has_component(target_entity, ImmunityComponent)
+            
             if esper.has_component(projectile_entity, Attack) and esper.has_component(target_entity, Health):
                 attack_comp = esper.component_for_entity(projectile_entity, Attack)
                 dmg = int(attack_comp.hitPoints) if attack_comp is not None else 0
-                if dmg > 0:
+                if dmg > 0 and not is_immune:
                     processHealth(target_entity, dmg, projectile_entity)
                     # Impact explosion and projectile removal
                     self._create_explosion_at_entity(projectile_entity)
+                    if esper.entity_exists(projectile_entity):
+                        esper.delete_entity(projectile_entity)
+                    return
+                elif is_immune:
+                    # Immune target: projectile dissipates without damage
                     if esper.entity_exists(projectile_entity):
                         esper.delete_entity(projectile_entity)
                     return
