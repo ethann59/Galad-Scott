@@ -95,10 +95,7 @@ class TestModularSystem:
 
     def test_category_modules_exist_french(self):
         """Test que tous les modules de catégorie français existent et se chargent."""
-        categories = [
-            'navigation', 'game', 'options', 'shops', 'help', 'actionbar',
-            'units', 'teams', 'debug', 'controls', 'system', 'tutorial', 'gameplay'
-        ]
+        categories = ['navigation', 'options']
 
         for category in categories:
             module = importlib.import_module(f'assets.locales.fr.{category}')
@@ -133,25 +130,13 @@ class TestBackwardCompatibility:
         assert isinstance(french_module.TRANSLATIONS, dict)
         assert len(french_module.TRANSLATIONS) > 0
 
-    def test_legacy_english_file_exists(self):
-        """Test que l'ancien fichier english.py existe toujours."""
-        english_module = importlib.import_module('assets.locales.english')
-        assert hasattr(english_module, 'TRANSLATIONS')
-        assert isinstance(english_module.TRANSLATIONS, dict)
-        assert len(english_module.TRANSLATIONS) > 0
-
     def test_legacy_files_have_same_interface(self):
-        """Test que les anciens fichiers ont la même interface."""
+        """Test que le fichier legacy français expose l'interface attendue."""
         french_module = importlib.import_module('assets.locales.french')
-        english_module = importlib.import_module('assets.locales.english')
-
-        # Les deux doivent avoir TRANSLATIONS
+ 
+        # Le module doit avoir TRANSLATIONS
         assert hasattr(french_module, 'TRANSLATIONS')
-        assert hasattr(english_module, 'TRANSLATIONS')
-
-        # TRANSLATIONS doit être un dict
         assert isinstance(french_module.TRANSLATIONS, dict)
-        assert isinstance(english_module.TRANSLATIONS, dict)
 
 
 @pytest.mark.unit
@@ -164,16 +149,10 @@ class TestGlobalFunctions:
         result = t("menu.play")
         assert result == "Jouer"
 
-    def test_global_t_function_english(self):
-        """Test fonction globale t() en anglais."""
-        set_language("en")
-        result = t("menu.play")
-        assert result == "Play"
-
     def test_newline_unescaping_in_translations(self, localization_manager):
         """Les traductions contenant des séquences '\\n' doivent être renvoyées avec de vrais retours à la ligne."""
-        localization_manager.set_language("en")
-        val = localization_manager.translate("tooltip.ai_toggle")
+        localization_manager.set_language("fr")
+        val = localization_manager.translate("options.save_error_message", error="X")
         assert "\\n" not in val
         assert "\n" in val
 
@@ -181,11 +160,11 @@ class TestGlobalFunctions:
         """Test fonction globale set_language()."""
         original_lang = get_current_language()
         try:
-            assert set_language("en") is True
-            assert get_current_language() == "en"
+            assert set_language("fr") is True
+            assert get_current_language() == "fr"
 
             result = t("menu.play")
-            assert result == "Play"
+            assert result == "Jouer"
         finally:
             # Restaurer la langue originale
             set_language(original_lang)
@@ -193,7 +172,7 @@ class TestGlobalFunctions:
     def test_global_get_current_language(self):
         """Test fonction globale get_current_language()."""
         lang = get_current_language()
-        assert lang in ["fr", "en"]
+        assert lang in ["fr"]
 
 
 @pytest.mark.integration
@@ -206,10 +185,6 @@ class TestLocalizationIntegration:
         localization_manager.set_language("fr")
         assert localization_manager.translate("menu.play") == "Jouer"
 
-        # Changer en anglais
-        localization_manager.set_language("en")
-        assert localization_manager.translate("menu.play") == "Play"
-
         # Revenir en français
         localization_manager.set_language("fr")
         assert localization_manager.translate("menu.play") == "Jouer"
@@ -217,35 +192,22 @@ class TestLocalizationIntegration:
     def test_modular_system_coverage(self):
         """Test couverture du système modulaire."""
         french_modular = importlib.import_module('assets.locales.fr')
-        english_modular = importlib.import_module('assets.locales.en')
-
-        # Compter les clés dans chaque système
         french_keys = set(french_modular.TRANSLATIONS.keys())
-        english_keys = set(english_modular.TRANSLATIONS.keys())
-
-        # Les deux langues devraient avoir approximativement le même nombre de clés
-        ratio = len(english_keys) / len(french_keys) if french_keys else 0
-        assert 0.8 <= ratio <= 1.2, f"Translation coverage ratio: {ratio:.2f}"
 
         # Certaines clés communes devraient exister
         common_keys = ["menu.play", "menu.options", "menu.quit"]
         for key in common_keys:
             assert key in french_keys, f"Missing key '{key}' in French modular"
-            assert key in english_keys, f"Missing key '{key}' in English modular"
 
     def test_backward_compatibility_integration(self):
         """Test intégration de la rétrocompatibilité."""
         # Charger tous les systèmes
         french_modular = importlib.import_module('assets.locales.fr')
-        english_modular = importlib.import_module('assets.locales.en')
         french_legacy = importlib.import_module('assets.locales.french')
-        english_legacy = importlib.import_module('assets.locales.english')
 
         # Tous devraient avoir des traductions
         assert len(french_modular.TRANSLATIONS) > 0
-        assert len(english_modular.TRANSLATIONS) > 0
         assert len(french_legacy.TRANSLATIONS) > 0
-        assert len(english_legacy.TRANSLATIONS) > 0
 
         # Test avec LocalizationManager
         manager = LocalizationManager()

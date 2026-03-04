@@ -76,6 +76,7 @@ class TestRailShooter:
         pygame.quit()
 
 
+@pytest.mark.skip(reason="Les menus arcade dédiés ne sont plus présents dans src.functions")
 class TestArcadeMenus:
     """Tests pour les menus arcade"""
     
@@ -141,8 +142,8 @@ class TestArcadeError:
         
         # Test avec paramètres par défaut
         screen = ArcadeErrorScreen("Test error", 1.0, "0x12345")
-        assert screen.message == "Test error"
-        assert screen.auto_exit_time == 1.0
+        assert screen.error_message == "Test error"
+        assert screen.auto_exit_delay == 1.0
         assert screen.error_code == "0x12345"
 
 

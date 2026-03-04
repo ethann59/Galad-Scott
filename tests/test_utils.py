@@ -12,7 +12,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from utils.sprite_utils import get_unit_sprite_id
 from settings.settings import get_project_version, is_dev_mode_enabled
-from factory.unitType import UnitType
 from src.managers.sprite_manager import SpriteID
 
 
@@ -22,52 +21,52 @@ class TestSpriteUtils:
 
     def test_get_unit_sprite_id_scout_ally(self):
         """Test récupération du sprite ID pour un éclaireur allié."""
-        sprite_id = get_unit_sprite_id(UnitType.SCOUT, False)
+        sprite_id = get_unit_sprite_id("SCOUT", False)
         assert sprite_id == SpriteID.ALLY_SCOUT
 
     def test_get_unit_sprite_id_scout_enemy(self):
         """Test récupération du sprite ID pour un éclaireur ennemi."""
-        sprite_id = get_unit_sprite_id(UnitType.SCOUT, True)
+        sprite_id = get_unit_sprite_id("SCOUT", True)
         assert sprite_id == SpriteID.ENEMY_SCOUT
 
     def test_get_unit_sprite_id_marauder_ally(self):
         """Test récupération du sprite ID pour un maraudeur allié."""
-        sprite_id = get_unit_sprite_id(UnitType.MARAUDEUR, False)
+        sprite_id = get_unit_sprite_id("MARAUDEUR", False)
         assert sprite_id == SpriteID.ALLY_MARAUDEUR
 
     def test_get_unit_sprite_id_marauder_enemy(self):
         """Test récupération du sprite ID pour un maraudeur ennemi."""
-        sprite_id = get_unit_sprite_id(UnitType.MARAUDEUR, True)
+        sprite_id = get_unit_sprite_id("MARAUDEUR", True)
         assert sprite_id == SpriteID.ENEMY_MARAUDEUR
 
     def test_get_unit_sprite_id_leviathan_ally(self):
         """Test récupération du sprite ID pour un léviathan allié."""
-        sprite_id = get_unit_sprite_id(UnitType.LEVIATHAN, False)
+        sprite_id = get_unit_sprite_id("LEVIATHAN", False)
         assert sprite_id == SpriteID.ALLY_LEVIATHAN
 
     def test_get_unit_sprite_id_leviathan_enemy(self):
         """Test récupération du sprite ID pour un léviathan ennemi."""
-        sprite_id = get_unit_sprite_id(UnitType.LEVIATHAN, True)
+        sprite_id = get_unit_sprite_id("LEVIATHAN", True)
         assert sprite_id == SpriteID.ENEMY_LEVIATHAN
 
     def test_get_unit_sprite_id_druid_ally(self):
         """Test récupération du sprite ID pour un druide allié."""
-        sprite_id = get_unit_sprite_id(UnitType.DRUID, False)
+        sprite_id = get_unit_sprite_id("DRUID", False)
         assert sprite_id == SpriteID.ALLY_DRUID
 
     def test_get_unit_sprite_id_druid_enemy(self):
         """Test récupération du sprite ID pour un druide ennemi."""
-        sprite_id = get_unit_sprite_id(UnitType.DRUID, True)
+        sprite_id = get_unit_sprite_id("DRUID", True)
         assert sprite_id == SpriteID.ENEMY_DRUID
 
     def test_get_unit_sprite_id_architect_ally(self):
         """Test récupération du sprite ID pour un architecte allié."""
-        sprite_id = get_unit_sprite_id(UnitType.ARCHITECT, False)
+        sprite_id = get_unit_sprite_id("ARCHITECT", False)
         assert sprite_id == SpriteID.ALLY_ARCHITECT
 
     def test_get_unit_sprite_id_architect_enemy(self):
         """Test récupération du sprite ID pour un architecte ennemi."""
-        sprite_id = get_unit_sprite_id(UnitType.ARCHITECT, True)
+        sprite_id = get_unit_sprite_id("ARCHITECT", True)
         assert sprite_id == SpriteID.ENEMY_ARCHITECT
 
     def test_get_unit_sprite_id_unknown_unit(self):
