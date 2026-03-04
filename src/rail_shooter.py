@@ -35,11 +35,14 @@ class RailShooterEngine:
         self.clock: Optional[pygame.time.Clock] = None
         self.player_id: Optional[int] = None
         self.player_fire_cooldown = 0.0
+        self.player_fire_interval = 0.18  # Anti-spam: ~5.5 tirs/sec max
         self._last_player_health = 0  # Tracker pour détecter les dégâts
         self.enemy_fire_cooldowns: Dict[int, float] = {}
         self.enemy_states: Dict[int, Dict[str, float]] = {}
+        self.enemy_score_values: Dict[int, int] = {}
         self.enemy_entities: Set[int] = set()
         self.despawned_enemies: Set[int] = set()
+        self._boss_wave = 0
 
         self.spawn_timer = 0.0
         self.spawn_interval = 1.1
@@ -150,6 +153,7 @@ class RailShooterEngine:
                 SpriteID.ENEMY_SCOUT,
                 SpriteID.ENEMY_MARAUDEUR,
                 SpriteID.ENEMY_KAMIKAZE,
+                SpriteID.ENEMY_LEVIATHAN,
                 SpriteID.PROJECTILE_BULLET,
                 SpriteID.PROJECTILE_FIREBALL,
                 SpriteID.TERRAIN_SEA,
@@ -320,9 +324,6 @@ class RailShooterEngine:
         if self.spawn_timer > 0:
             return
 
-        if len(self.enemy_entities) >= self.max_enemies:
-            return
-
         self.spawn_timer = self.spawn_interval
 
         width, height = self.window.get_size()
@@ -330,26 +331,68 @@ class RailShooterEngine:
         spawn_y = random.uniform(margin, height - margin)
         spawn_x = width + 80
 
+        if self._should_spawn_leviathan_boss() and len(self.enemy_entities) < (self.max_enemies + 1):
+            self._spawn_enemy(
+                kind="leviathan",
+                sprite_id=SpriteID.ENEMY_LEVIATHAN,
+                sprite_w=180,
+                sprite_h=220,
+                hp=25,
+                speed=85.0,
+                spawn_x=spawn_x,
+                spawn_y=spawn_y,
+                score_value=250,
+            )
+            self._boss_wave += 1
+            return
+
+        if len(self.enemy_entities) >= self.max_enemies:
+            return
+
         # Progression des ennemis basée sur le score
         enemy_types = []
         
         # Scouts: toujours disponibles (plus fréquents au début)
         scout_weight = 70 if self.score < 100 else (50 if self.score < 300 else 30)
-        enemy_types.extend([("scout", SpriteID.ENEMY_SCOUT, 80, 100, 2, 140.0)] * scout_weight)
+        enemy_types.extend([("scout", SpriteID.ENEMY_SCOUT, 80, 100, 2, 140.0, 10)] * scout_weight)
         
         # Maraudeurs: apparaissent après 50 points, deviennent fréquents
         if self.score >= 50:
             maraudeur_weight = 20 if self.score < 200 else (50 if self.score < 500 else 60)
-            enemy_types.extend([("maraudeur", SpriteID.ENEMY_MARAUDEUR, 110, 120, 4, 120.0)] * maraudeur_weight)
+            enemy_types.extend([("maraudeur", SpriteID.ENEMY_MARAUDEUR, 110, 120, 4, 120.0, 20)] * maraudeur_weight)
         
         # Kamikazes: rares, apparaissent après 150 points, oneshot mais dangereux
         if self.score >= 150:
             kamikaze_weight = 5 if self.score < 400 else 10
-            enemy_types.extend([("kamikaze", SpriteID.ENEMY_KAMIKAZE, 110, 90, 1, 200.0)] * kamikaze_weight)
+            enemy_types.extend([("kamikaze", SpriteID.ENEMY_KAMIKAZE, 110, 90, 1, 200.0, 25)] * kamikaze_weight)
         
         enemy_type = random.choice(enemy_types)
-        kind, sprite_id, sprite_w, sprite_h, hp, speed = enemy_type
+        kind, sprite_id, sprite_w, sprite_h, hp, speed, score_value = enemy_type
 
+        self._spawn_enemy(
+            kind=kind,
+            sprite_id=sprite_id,
+            sprite_w=sprite_w,
+            sprite_h=sprite_h,
+            hp=hp,
+            speed=speed,
+            spawn_x=spawn_x,
+            spawn_y=spawn_y,
+            score_value=score_value,
+        )
+
+    def _spawn_enemy(
+        self,
+        kind: str,
+        sprite_id: SpriteID,
+        sprite_w: int,
+        sprite_h: int,
+        hp: int,
+        speed: float,
+        spawn_x: float,
+        spawn_y: float,
+        score_value: int,
+    ) -> None:
         enemy = es.create_entity()
         es.add_component(enemy, PositionComponent(spawn_x, spawn_y, 0.0))
         es.add_component(enemy, VelocityComponent(speed, speed, -speed, 1.0))
@@ -362,6 +405,7 @@ class RailShooterEngine:
             es.add_component(enemy, sprite)
 
         self.enemy_entities.add(enemy)
+        self.enemy_score_values[enemy] = int(score_value)
         self.enemy_fire_cooldowns[enemy] = random.uniform(0.8, 1.6)
         self.enemy_states[enemy] = {
             "kind": 0.0,
@@ -372,7 +416,28 @@ class RailShooterEngine:
             "zigzag_phase": random.uniform(0.0, math.tau),
             "base_y": spawn_y,
         }
-        self.enemy_states[enemy]["kind"] = 0.0 if kind == "scout" else 1.0 if kind == "maraudeur" else 2.0
+        if kind == "scout":
+            self.enemy_states[enemy]["kind"] = 0.0
+        elif kind == "maraudeur":
+            self.enemy_states[enemy]["kind"] = 1.0
+        elif kind == "kamikaze":
+            self.enemy_states[enemy]["kind"] = 2.0
+        else:
+            self.enemy_states[enemy]["kind"] = 3.0
+
+    def _has_active_leviathan(self) -> bool:
+        for enemy_id in self.enemy_entities:
+            state = self.enemy_states.get(enemy_id)
+            if state and int(state.get("kind", -1.0)) == 3 and es.entity_exists(enemy_id):
+                return True
+        return False
+
+    def _should_spawn_leviathan_boss(self) -> bool:
+        # Un boss toutes les 250 points, un seul actif à la fois
+        target_wave = self.score // 250
+        if target_wave <= self._boss_wave:
+            return False
+        return not self._has_active_leviathan()
 
     def _update_enemies(self, dt: float) -> None:
         player_pos = None
@@ -399,8 +464,10 @@ class RailShooterEngine:
                 self._update_scout_enemy(enemy_id, pos, state, dt, player_pos)
             elif kind == 1:
                 self._update_maraudeur_enemy(enemy_id, pos, state, dt, player_pos)
-            else:
+            elif kind == 2:
                 self._update_kamikaze_enemy(enemy_id, pos, state, dt, player_pos)
+            else:
+                self._update_leviathan_enemy(enemy_id, pos, state, dt, player_pos)
             if pos.x > start_x:
                 pos.x = start_x
 
@@ -454,6 +521,38 @@ class RailShooterEngine:
         pos.x += (dx / dist) * speed * boost * dt
         pos.y += (dy / dist) * speed * boost * dt
 
+        # Kamikaze = mort instantanée au contact du joueur
+        hit_radius = 52.0
+        if dist <= hit_radius and self.player_id is not None and es.entity_exists(self.player_id):
+            if es.has_component(self.player_id, HealthComponent):
+                player_health = es.component_for_entity(self.player_id, HealthComponent)
+                player_health.currentHealth = 0
+
+            if self.collision_processor is not None:
+                try:
+                    self.collision_processor._create_explosion_at_position(pos.x, pos.y)
+                except Exception:
+                    pass
+
+            if es.entity_exists(enemy_id):
+                es.delete_entity(enemy_id)
+
+    def _update_leviathan_enemy(self, enemy_id: int, pos: PositionComponent, state: Dict[str, float], dt: float, player_pos: Optional[PositionComponent]) -> None:
+        speed = state.get("speed", 85.0)
+        pos.x -= speed * dt
+
+        if player_pos is not None:
+            dy = player_pos.y - pos.y
+            pos.y += max(-1.0, min(1.0, dy / 120.0)) * 55.0 * dt
+
+        state["fire_cooldown"] -= dt
+        if player_pos is not None and state["fire_cooldown"] <= 0:
+            # Salve large pour accentuer le côté boss
+            self._fire_at_target(enemy_id, pos, player_pos, spread=16.0)
+            self._fire_at_target(enemy_id, pos, player_pos, spread=0.0)
+            self._fire_at_target(enemy_id, pos, player_pos, spread=-16.0)
+            state["fire_cooldown"] = random.uniform(1.6, 2.4)
+
     def _move_projectiles(self, dt: float) -> None:
         for ent, (pos, vel, _) in es.get_components(PositionComponent, VelocityComponent, ProjectileComponent):
             if vel.currentSpeed == 0:
@@ -476,7 +575,7 @@ class RailShooterEngine:
         if self.player_fire_cooldown > 0:
             return
         es.dispatch_event("attack_event", self.player_id, "bullet")
-        self.player_fire_cooldown = 0.08
+        self.player_fire_cooldown = self.player_fire_interval
 
     def _fire_at_target(self, enemy_id: int, pos: PositionComponent, target: Optional[PositionComponent], spread: float = 0.0) -> None:
         if target is None:
@@ -522,6 +621,8 @@ class RailShooterEngine:
                     self.despawned_enemies.add(ent)
                     self.enemy_entities.discard(ent)
                     self.enemy_fire_cooldowns.pop(ent, None)
+                    self.enemy_states.pop(ent, None)
+                    self.enemy_score_values.pop(ent, None)
                 if ent == self.player_id:
                     continue
                 if es.entity_exists(ent):
@@ -530,9 +631,11 @@ class RailShooterEngine:
         for enemy_id in list(self.enemy_entities):
             if not es.entity_exists(enemy_id):
                 if enemy_id not in self.despawned_enemies:
-                    self.score += 10
+                    self.score += self.enemy_score_values.get(enemy_id, 10)
                 self.enemy_entities.discard(enemy_id)
                 self.enemy_fire_cooldowns.pop(enemy_id, None)
+                self.enemy_states.pop(enemy_id, None)
+                self.enemy_score_values.pop(enemy_id, None)
 
         self.despawned_enemies.clear()
 
